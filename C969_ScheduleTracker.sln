@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C969_ScheduleTracker", "C969_ScheduleTracker\C969_ScheduleTracker.csproj", "{D65F1CB7-3A62-4A7E-9A9A-26F142A8171D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D65F1CB7-3A62-4A7E-9A9A-26F142A8171D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D65F1CB7-3A62-4A7E-9A9A-26F142A8171D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D65F1CB7-3A62-4A7E-9A9A-26F142A8171D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D65F1CB7-3A62-4A7E-9A9A-26F142A8171D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0F234607-5165-49F8-9C5E-F4004073A1C0}
+	EndGlobalSection
+EndGlobal
