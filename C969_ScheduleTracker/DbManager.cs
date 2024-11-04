@@ -7,9 +7,10 @@ public static class DbManager
     private static readonly string ConnectionString =
         "server=localhost;user=sqlUser;database=client_schedule;port=3306;password=Passw0rd";
 
-    public static MySqlDataReader ExecuteQuery(string query)
+    // We need to return a List of Dictionaries, or a List of custom objects
+    public static List<Dictionary<string, object>> ExecuteQueryToList(string query)
     {
-        List<Object> resultList = new List<object>();
+        var resultList = new List<Dictionary<string, object>>();
         using (MySqlConnection connection = new MySqlConnection(ConnectionString))
         {
             try
@@ -17,16 +18,27 @@ public static class DbManager
                 connection.Open();
                 using (MySqlCommand cmd = new MySqlCommand(query, connection))
                 {
-                    MySqlDataReader reader = cmd.ExecuteReader();
-                    return reader;
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var row = new Dictionary<string, object>();
+                            for (int i = 0; i < reader.FieldCount; i++)
+                            {
+                                row[reader.GetName(i)] = reader.GetValue(i);
+                            }
+                            resultList.Add(row);
+                        }
+                    }
+                    
                 }
             }
             catch (MySqlException e)
-            { 
+            {
                 Console.WriteLine($"Error: {e.Message}");
             }
 
-            return null;
+            return resultList;
         }
     }
 
@@ -38,7 +50,7 @@ public static class DbManager
         return cmd;
     }
 
-    public static MySqlCommand GetAppointmentInfo(string userId, DateTime sysDate)
+    public static MySqlCommand GetAppointmentToday(string userId, DateTime sysDate)
     {
         string query = "SELECT customerName," +
                        " DATE_FORMAT(start, '%Y-%m-%d') as Date" +
@@ -50,9 +62,44 @@ public static class DbManager
                        "AND app.userId = @userId" +
                        "ORDER BY StartTime";
 
-        MySqlCommand cmd = new MySqlCommand( query );
+        MySqlCommand cmd = new MySqlCommand(query);
         cmd.Parameters.AddWithValue("@userId", userId);
         cmd.Parameters.AddWithValue("@systemDate", sysDate);
+        return cmd;
+    }
+
+    public static MySqlCommand GetAppointmentWeekly(string userId, DateTime sysDate)
+    {
+        string query = "SELECT customerName, " +
+                       "DATE_FORMAT(start, '%Y-%m-%d') as Date, " +
+                       "DATE_FORMAT(start, '%H:%i') as StartTime, " +
+                       "DATE_FORMAT(end, '%H:%i') as EndTime, app.customerId " +
+                       "FROM appointment as app " +
+                       "LEFT JOIN customer as cust on app.customerId " +
+                       "WHERE MONTH(app.start) = MONTH(@systemDate) " +
+                       "AND YEAR(app.start) = YEAR(@systemDate) " +
+                       "AND app.userId = @userId " +
+                       "ORDER BY StartTime";
+        MySqlCommand cmd = new MySqlCommand(query);
+        cmd.Parameters.AddWithValue("@systemDate", sysDate);
+        cmd.Parameters.AddWithValue("@userId", userId);
+        return cmd;
+    }
+
+    public static MySqlCommand GetAppointmentAll(string userId)
+    {
+        string query = "SELECT cust.customerName, " +
+                       "DATE_FORMAT(app.start, '%Y-%m-%d') AS Date, " +
+                       "DATE_FORMAT(app.start, '%H:%i') AS StartTime, " +
+                       "DATE_FORMAT(app.end, '%H:%i') AS EndTime, " +
+                       "app.customerId FROM appointment AS app " +
+                       "LEFT JOIN customer AS cust ON app.customerId = cust.customerId " +
+                       "WHERE app.Start >= @systemDate " +
+                       "AND app.userId = @userId " +
+                       "ORDER BY StartTime DESC";
+
+        MySqlCommand cmd = new MySqlCommand(query);
+        cmd.Parameters.AddWithValue("@userId", userId);
         return cmd;
     }
 
