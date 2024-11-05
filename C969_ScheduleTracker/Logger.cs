@@ -4,18 +4,26 @@ public class Logger
 {
     private string _fileLocation;
 
-    public Logger(string fileLocation)
+    public Logger()
     {
-        _fileLocation = fileLocation;
+        string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        _fileLocation = Path.Combine(documentsPath, "ScheduleTrackerLogs", "ScheduleTrackerLog.txt");
+        Directory.CreateDirectory(Path.GetDirectoryName(_fileLocation));
     }
 
     public void logSuccess(string username, DateTime time)
     {
-        MessageBox.Show($"Oh no! You've succeeded at {time}, {username}!");
+        using (StreamWriter writer = File.AppendText(_fileLocation))
+        {
+            writer.WriteLine($"INFO: {time}: Sign in succeeded with Username[{username}]");
+        }
     }
 
     public void logFailure(string username, DateTime time)
     {
-        MessageBox.Show($"Nice! You got blocked at {time} {username}.");
+        using (StreamWriter writer =File.AppendText(_fileLocation))
+        {
+            writer.WriteLine($"ERROR: {time}: Sign in failed with Username[{username}]");
+        }
     }
 }

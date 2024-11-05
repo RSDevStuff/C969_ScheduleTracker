@@ -12,7 +12,7 @@ namespace C969_ScheduleTracker
 
         private void signInButton_Click(object sender, EventArgs e)
         {
-            Logger logger = new Logger("C://Pizza");
+            Logger logger = new Logger();
             string username = userNameTextBox.Text;
             string password = userPwTextBox.Text;
             string errorMessage = "";
@@ -47,9 +47,9 @@ namespace C969_ScheduleTracker
                             break;
                     }
                     MessageBox.Show(errorMessage, errorLabel, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    userNameTextBox.BackColor = Color.Pink;
-                    userPwTextBox.BackColor = Color.Pink;
                     logger.logFailure(username, DateTime.Now);
+                    userPwTextBox.Clear();
+                    userNameTextBox.Select();
                 }
             }
             else
