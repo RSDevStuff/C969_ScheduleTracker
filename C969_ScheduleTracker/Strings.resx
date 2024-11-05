@@ -106,4 +106,16 @@
 		<data name="SignInButton" xml:space="preserve">
     <value>Login</value>
   </data>
+	<data name="ExitButton" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+	<data name="LoginTitle" xml:space="preserve">
+		<value>Schedule Manager</value>
+	</data>
+	<data name="ErrorLabel" xml:space="preserve">
+		<value>Invalid Sign In</value>
+	</data>
+	<data name="ErrorMessage" xml:space="preserve">
+		<value>Incorrect username or password.</value>
+	</data>
 </root>

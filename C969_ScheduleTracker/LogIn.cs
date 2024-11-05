@@ -15,8 +15,8 @@ namespace C969_ScheduleTracker
             Logger logger = new Logger("C://Pizza");
             string username = userNameTextBox.Text;
             string password = userPwTextBox.Text;
-            string errorMessage = "Incorrect username or password.";
-            string errorLabel = "Invalid Sign In";
+            string errorMessage = "";
+            string errorLabel = "";
 
             if (!String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password))
             {
@@ -25,9 +25,8 @@ namespace C969_ScheduleTracker
                 if (DbManager.ExecuteQueryToList(query).Count > 0 && password == DbManager.ExecuteQueryToList(query)[0]["password"].ToString())
                 {
                     logger.logSuccess(username, DateTime.Now);
-                    Hide();
-                    ManagerForm mangerForm = new ManagerForm();
-                    mangerForm.Show();
+                    DialogResult = DialogResult.OK;
+                    Close();
 
                 }
                 else
@@ -42,10 +41,14 @@ namespace C969_ScheduleTracker
                             errorMessage = _localizationManager.GetString("ErrorMessage");
                             errorLabel = _localizationManager.GetString("ErrorLabel");
                             break;
+                        case "en":
+                            errorMessage = _localizationManager.GetString("ErrorMessage");
+                            errorLabel = _localizationManager.GetString("ErrorLabel");
+                            break;
                     }
                     MessageBox.Show(errorMessage, errorLabel, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    userNameTextBox.BackColor = Color.IndianRed;
-                    userPwTextBox.BackColor = Color.IndianRed;
+                    userNameTextBox.BackColor = Color.Pink;
+                    userPwTextBox.BackColor = Color.Pink;
                     logger.logFailure(username, DateTime.Now);
                 }
             }

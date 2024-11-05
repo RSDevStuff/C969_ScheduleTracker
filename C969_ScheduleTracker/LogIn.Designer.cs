@@ -73,6 +73,7 @@
             userPwTextBox.Name = "userPwTextBox";
             userPwTextBox.Size = new Size(225, 29);
             userPwTextBox.TabIndex = 4;
+            userPwTextBox.UseSystemPasswordChar = true;
             // 
             // passwordLabel
             // 
