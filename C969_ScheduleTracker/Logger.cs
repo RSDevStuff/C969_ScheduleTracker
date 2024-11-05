@@ -3,23 +3,19 @@
 public class Logger
 {
     private string _fileLocation;
-    private string _userName;
-    private DateTime _logTime;
 
-    public Logger(string fileLocation, string userName, DateTime logTime)
+    public Logger(string fileLocation)
     {
         _fileLocation = fileLocation;
-        _userName = userName;
-        _logTime = logTime;
     }
 
     public void logSuccess(string username, DateTime time)
     {
-        MessageBox.Show("Oh no!");
+        MessageBox.Show($"Oh no! You've succeeded at {time}, {username}!");
     }
 
     public void logFailure(string username, DateTime time)
     {
-        MessageBox.Show("Nice!");
+        MessageBox.Show($"Nice! You got blocked at {time} {username}.");
     }
 }

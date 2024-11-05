@@ -35,14 +35,14 @@
             passwordLabel = new Label();
             signInButton = new Button();
             exitButton = new Button();
-            label1 = new Label();
+            loginTitleLabel = new Label();
             SuspendLayout();
             // 
             // locationLabel
             // 
             locationLabel.AutoSize = true;
             locationLabel.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            locationLabel.Location = new Point(264, 9);
+            locationLabel.Location = new Point(332, 12);
             locationLabel.Name = "locationLabel";
             locationLabel.Size = new Size(99, 17);
             locationLabel.TabIndex = 0;
@@ -61,7 +61,7 @@
             // userNameTextBox
             // 
             userNameTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            userNameTextBox.Location = new Point(124, 63);
+            userNameTextBox.Location = new Point(206, 66);
             userNameTextBox.Name = "userNameTextBox";
             userNameTextBox.Size = new Size(225, 29);
             userNameTextBox.TabIndex = 2;
@@ -69,7 +69,7 @@
             // userPwTextBox
             // 
             userPwTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            userPwTextBox.Location = new Point(124, 108);
+            userPwTextBox.Location = new Point(206, 107);
             userPwTextBox.Name = "userPwTextBox";
             userPwTextBox.Size = new Size(225, 29);
             userPwTextBox.TabIndex = 4;
@@ -87,39 +87,41 @@
             // signInButton
             // 
             signInButton.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            signInButton.Location = new Point(124, 166);
+            signInButton.Location = new Point(206, 166);
             signInButton.Name = "signInButton";
             signInButton.Size = new Size(106, 37);
             signInButton.TabIndex = 5;
             signInButton.Text = "Sign In";
             signInButton.UseVisualStyleBackColor = true;
+            signInButton.Click += signInButton_Click;
             // 
             // exitButton
             // 
             exitButton.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            exitButton.Location = new Point(243, 166);
+            exitButton.Location = new Point(325, 166);
             exitButton.Name = "exitButton";
             exitButton.Size = new Size(106, 37);
             exitButton.TabIndex = 6;
             exitButton.Text = "Exit";
             exitButton.UseVisualStyleBackColor = true;
+            exitButton.Click += exitButton_Click;
             // 
-            // label1
+            // loginTitleLabel
             // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label1.Location = new Point(12, 9);
-            label1.Name = "label1";
-            label1.Size = new Size(139, 21);
-            label1.TabIndex = 7;
-            label1.Text = "Schedule Manager";
+            loginTitleLabel.AutoSize = true;
+            loginTitleLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            loginTitleLabel.Location = new Point(12, 9);
+            loginTitleLabel.Name = "loginTitleLabel";
+            loginTitleLabel.Size = new Size(139, 21);
+            loginTitleLabel.TabIndex = 7;
+            loginTitleLabel.Text = "Schedule Manager";
             // 
-            // Form1
+            // LogIn
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(375, 215);
-            Controls.Add(label1);
+            ClientSize = new Size(443, 215);
+            Controls.Add(loginTitleLabel);
             Controls.Add(exitButton);
             Controls.Add(signInButton);
             Controls.Add(userPwTextBox);
@@ -127,7 +129,7 @@
             Controls.Add(userNameTextBox);
             Controls.Add(userNameLabel);
             Controls.Add(locationLabel);
-            Name = "Form1";
+            Name = "LogIn";
             Text = "Sign In";
             ResumeLayout(false);
             PerformLayout();
@@ -142,6 +144,6 @@
         private Label passwordLabel;
         private Button signInButton;
         private Button exitButton;
-        private Label label1;
+        private Label loginTitleLabel;
     }
 }

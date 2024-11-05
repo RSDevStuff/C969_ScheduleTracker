@@ -5,10 +5,10 @@ namespace C969_ScheduleTracker;
 public static class DbManager
 {
     private static readonly string ConnectionString =
-        "server=localhost;user=sqlUser;database=client_schedule;port=3306;password=Passw0rd";
+        "server=localhost;user=sqlUser;database=client_schedule;port=3306;password=Passw0rd!";
 
     // We need to return a List of Dictionaries, or a List of custom objects
-    public static List<Dictionary<string, object>> ExecuteQueryToList(string query)
+    public static List<Dictionary<string, object>> ExecuteQueryToList(MySqlCommand cmd)
     {
         var resultList = new List<Dictionary<string, object>>();
         using (MySqlConnection connection = new MySqlConnection(ConnectionString))
@@ -16,29 +16,47 @@ public static class DbManager
             try
             {
                 connection.Open();
+                cmd.Connection = connection;
+
+                using (MySqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var row = new Dictionary<string, object>();
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            row[reader.GetName(i)] = reader.GetValue(i);
+                        }
+                        resultList.Add(row);
+                    }
+                }
+            }
+            catch (MySqlException e)
+            {
+                MessageBox.Show($"Error: {e.Message}");
+            }
+
+            return resultList;
+        }
+    }
+
+    public static int ExecuteModification(string query)
+    {
+        using (MySqlConnection connection = new MySqlConnection(ConnectionString))
+        {
+            try
+            {
+                connection.Open();
                 using (MySqlCommand cmd = new MySqlCommand(query, connection))
                 {
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            var row = new Dictionary<string, object>();
-                            for (int i = 0; i < reader.FieldCount; i++)
-                            {
-                                row[reader.GetName(i)] = reader.GetValue(i);
-                            }
-                            resultList.Add(row);
-                        }
-                    }
-                    
+                    return cmd.ExecuteNonQuery();
                 }
             }
             catch (MySqlException e)
             {
                 Console.WriteLine($"Error: {e.Message}");
+                return -1;
             }
-
-            return resultList;
         }
     }
 
@@ -119,6 +137,13 @@ public static class DbManager
             "LEFT JOIN country as co ON co.countryId = ci.countryId";
 
         MySqlCommand cmd = new MySqlCommand(query);
+        return cmd;
+    }
+
+    public static MySqlCommand GetMaxId()
+    {
+        //implementation
+        MySqlCommand cmd = new MySqlCommand();
         return cmd;
     }
 }
