@@ -30,6 +30,9 @@
         {
             managerFormTabControl = new TabControl();
             appointmentsTab = new TabPage();
+            endTimePicker = new DateTimePicker();
+            startTimePicker = new DateTimePicker();
+            dateTimePicker = new DateTimePicker();
             clearButton = new Button();
             exitButton = new Button();
             reportsButton = new Button();
@@ -43,11 +46,8 @@
             typeLabel = new Label();
             customerTextBox = new TextBox();
             customerLabel = new Label();
-            endsTextBox = new TextBox();
             endsLabel = new Label();
-            startsTextBox = new TextBox();
             startsLabel = new Label();
-            dateTextBox = new TextBox();
             dateLabel = new Label();
             selectedAppointmentLabel = new Label();
             customersTab = new TabPage();
@@ -90,6 +90,9 @@
             // 
             // appointmentsTab
             // 
+            appointmentsTab.Controls.Add(endTimePicker);
+            appointmentsTab.Controls.Add(startTimePicker);
+            appointmentsTab.Controls.Add(dateTimePicker);
             appointmentsTab.Controls.Add(clearButton);
             appointmentsTab.Controls.Add(exitButton);
             appointmentsTab.Controls.Add(reportsButton);
@@ -103,11 +106,8 @@
             appointmentsTab.Controls.Add(typeLabel);
             appointmentsTab.Controls.Add(customerTextBox);
             appointmentsTab.Controls.Add(customerLabel);
-            appointmentsTab.Controls.Add(endsTextBox);
             appointmentsTab.Controls.Add(endsLabel);
-            appointmentsTab.Controls.Add(startsTextBox);
             appointmentsTab.Controls.Add(startsLabel);
-            appointmentsTab.Controls.Add(dateTextBox);
             appointmentsTab.Controls.Add(dateLabel);
             appointmentsTab.Controls.Add(selectedAppointmentLabel);
             appointmentsTab.Location = new Point(4, 30);
@@ -117,6 +117,32 @@
             appointmentsTab.TabIndex = 0;
             appointmentsTab.Text = "Appointments";
             appointmentsTab.UseVisualStyleBackColor = true;
+            // 
+            // endTimePicker
+            // 
+            endTimePicker.Format = DateTimePickerFormat.Time;
+            endTimePicker.Location = new Point(89, 110);
+            endTimePicker.Name = "endTimePicker";
+            endTimePicker.ShowUpDown = true;
+            endTimePicker.Size = new Size(133, 29);
+            endTimePicker.TabIndex = 22;
+            // 
+            // startTimePicker
+            // 
+            startTimePicker.Format = DateTimePickerFormat.Time;
+            startTimePicker.Location = new Point(89, 75);
+            startTimePicker.Name = "startTimePicker";
+            startTimePicker.ShowUpDown = true;
+            startTimePicker.Size = new Size(133, 29);
+            startTimePicker.TabIndex = 21;
+            // 
+            // dateTimePicker
+            // 
+            dateTimePicker.Format = DateTimePickerFormat.Short;
+            dateTimePicker.Location = new Point(89, 43);
+            dateTimePicker.Name = "dateTimePicker";
+            dateTimePicker.Size = new Size(133, 29);
+            dateTimePicker.TabIndex = 20;
             // 
             // clearButton
             // 
@@ -172,6 +198,7 @@
             addAppointmentButton.TabIndex = 14;
             addAppointmentButton.Text = "Add";
             addAppointmentButton.UseVisualStyleBackColor = true;
+            addAppointmentButton.Click += addAppointmentButton_Click;
             // 
             // dateRangeBox
             // 
@@ -196,7 +223,7 @@
             // appointmentGridView
             // 
             appointmentGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            appointmentGridView.Location = new Point(249, 43);
+            appointmentGridView.Location = new Point(249, 41);
             appointmentGridView.Name = "appointmentGridView";
             appointmentGridView.Size = new Size(545, 244);
             appointmentGridView.TabIndex = 11;
@@ -235,13 +262,6 @@
             customerLabel.TabIndex = 7;
             customerLabel.Text = "Customer";
             // 
-            // endsTextBox
-            // 
-            endsTextBox.Location = new Point(89, 113);
-            endsTextBox.Name = "endsTextBox";
-            endsTextBox.Size = new Size(133, 29);
-            endsTextBox.TabIndex = 6;
-            // 
             // endsLabel
             // 
             endsLabel.AutoSize = true;
@@ -251,13 +271,6 @@
             endsLabel.TabIndex = 5;
             endsLabel.Text = "Ends";
             // 
-            // startsTextBox
-            // 
-            startsTextBox.Location = new Point(89, 78);
-            startsTextBox.Name = "startsTextBox";
-            startsTextBox.Size = new Size(133, 29);
-            startsTextBox.TabIndex = 4;
-            // 
             // startsLabel
             // 
             startsLabel.AutoSize = true;
@@ -266,13 +279,6 @@
             startsLabel.Size = new Size(49, 21);
             startsLabel.TabIndex = 3;
             startsLabel.Text = "Starts";
-            // 
-            // dateTextBox
-            // 
-            dateTextBox.Location = new Point(89, 43);
-            dateTextBox.Name = "dateTextBox";
-            dateTextBox.Size = new Size(133, 29);
-            dateTextBox.TabIndex = 2;
             // 
             // dateLabel
             // 
@@ -508,16 +514,13 @@
         private TabControl managerFormTabControl;
         private TabPage appointmentsTab;
         private TabPage customersTab;
-        private TextBox dateTextBox;
         private Label dateLabel;
         private Label selectedAppointmentLabel;
         private ComboBox typeComboBox;
         private Label typeLabel;
         private TextBox customerTextBox;
         private Label customerLabel;
-        private TextBox endsTextBox;
         private Label endsLabel;
-        private TextBox startsTextBox;
         private Label startsLabel;
         private ComboBox dateRangeBox;
         private Label dateRangeLabel;
@@ -547,5 +550,8 @@
         private Button clearButton;
         private Button custClearButton;
         private TextBox countryTextBox;
+        private DateTimePicker dateTimePicker;
+        private DateTimePicker endTimePicker;
+        private DateTimePicker startTimePicker;
     }
 }

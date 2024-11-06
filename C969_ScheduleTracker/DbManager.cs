@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using MySql.Data.MySqlClient;
+using Mysqlx.Resultset;
 
 namespace C969_ScheduleTracker;
 
@@ -151,6 +152,12 @@ public static class DbManager
     public static MySqlCommand GetMaxId()
     {
         //implementation
+        MySqlCommand cmd = new MySqlCommand();
+        return cmd;
+    }
+
+    public static MySqlCommand InsertNewAppointmentCommand()
+    {
         MySqlCommand cmd = new MySqlCommand();
         return cmd;
     }

@@ -1,7 +1,65 @@
-﻿namespace C969_ScheduleTracker;
+﻿using System.ComponentModel;
+using Org.BouncyCastle.Asn1.Mozilla;
+
+namespace C969_ScheduleTracker;
 
 public static class Validation
 {
+    // Validate a DateTime can be converted from string
+    public static bool ValidateDateTime(DateTime selectedDate, out string errorMessage)
+    {
+        DateTime currentDate = DateTime.Now;
+
+        // Provide flexibility for the scheduled time
+        if (selectedDate < currentDate.AddMinutes(-15))
+        {
+            errorMessage = $"DateTime: {selectedDate}. No time travelling allowed!";
+            return false;
+        }
+        else
+        {
+            errorMessage = "";
+            return true;
+        }
+    }
+
+    // Validate appointment times, to make sure there's no clash within a list of existing appointments
+    public static bool ValidateAppointmentTime(DateTime start, DateTime end, BindingList<Appointment> appointments, out string errorMessage)
+    {
+        foreach (var appointment in appointments)
+        {
+            DateTime existingStartTime = appointment.Start;
+            DateTime existingEndTime = appointment.End;
+
+            if (start >= existingStartTime && start < existingEndTime)
+            {
+                errorMessage = $"Cannot schedule appointment between {existingStartTime}-{existingEndTime}";
+                return true;
+            }
+
+            if (end > existingStartTime && end <= existingEndTime)
+            {
+                errorMessage = $"Cannot schedule appointment between {existingStartTime}-{existingEndTime}";
+                return true;
+            }
+
+            if (start < existingStartTime && end > existingEndTime)
+            {
+                errorMessage = $"Cannot schedule appointment between {existingStartTime}-{existingEndTime}";
+                return true;
+            }
+        }
+
+        errorMessage = "";
+        return false;
+    }
+
+    // Validate customerID exists, given a customer name.
+    public static bool ValidateCustomerId(string customerName, BindingList<Customer> customers, out string errorMessage)
+    {
+        errorMessage = "";
+        return true;
+    }
     // Make sure a string is not null or empty
     public static bool ValidateString(string input, out string errorMessage)
     {

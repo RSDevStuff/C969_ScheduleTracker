@@ -22,11 +22,17 @@ namespace C969_ScheduleTracker
             _userId = userId;
             var appointmentQuery = new MySqlCommand();
             var customerQuery = new MySqlCommand();
-            
+
             InitializeComponent();
 
+            // Initialize combo boxes, datetime pickers, and DGV's
             dateRangeBox.SelectedIndex = 0;
             typeComboBox.DataSource = Enum.GetValues(typeof(AppointmentType));
+            endTimePicker.CustomFormat = "hh:mm tt";
+            endTimePicker.Format = DateTimePickerFormat.Custom;
+            startTimePicker.CustomFormat = "hh:mm tt";
+            startTimePicker.Format = DateTimePickerFormat.Custom;
+
             appointmentQuery = DbManager.GetAppointmentAll();
             customerQuery = DbManager.GetCustomerAll();
 
@@ -109,9 +115,9 @@ namespace C969_ScheduleTracker
                 if (selectedRow != null)
                 {
                     Validation.ValidateInteger(selectedRow.Cells["customerId"].Value.ToString(), out int _customerId, out var message);
-                    dateTextBox.Text = Convert.ToDateTime(selectedRow.Cells["Date"].Value).ToString("yyyy-MM-dd");
-                    startsTextBox.Text = Convert.ToDateTime(selectedRow.Cells["Start"].Value).ToString("HH:mm");
-                    endsTextBox.Text = Convert.ToDateTime(selectedRow.Cells["End"].Value).ToString("HH:mm");
+                    dateTimePicker.Value = Convert.ToDateTime(selectedRow.Cells["Date"].Value);
+                    startTimePicker.Value = Convert.ToDateTime(selectedRow.Cells["Start"].Value);
+                    endTimePicker.Value = Convert.ToDateTime(selectedRow.Cells["End"].Value);
                     customerTextBox.Text = selectedRow.Cells["Customer"].Value?.ToString() ?? "";
                     if (Enum.TryParse(typeof(AppointmentType), selectedRow.Cells["Type"].Value?.ToString(), out var appointmentType))
                     {
@@ -138,10 +144,11 @@ namespace C969_ScheduleTracker
         {
             appointmentGridView.ClearSelection();
             _userId = -1;
-            dateTextBox.Clear();
-            startsTextBox.Clear();
-            endsTextBox.Clear();
+            dateTimePicker.Value = DateTime.Now;
+            startTimePicker.Value = DateTime.Now;
+            endTimePicker.Value = DateTime.Now.AddHours(1);
             customerTextBox.Clear();
+            typeComboBox.SelectedIndex = 5;
         }
 
         // Logic for selected customer
@@ -159,7 +166,6 @@ namespace C969_ScheduleTracker
                     cityTextBox.Text = selectedRow.Cells["City"].Value?.ToString() ?? "";
                     countryTextBox.Text = selectedRow.Cells["Country"].Value?.ToString() ?? "";
                 }
-
             }
         }
 
@@ -172,6 +178,71 @@ namespace C969_ScheduleTracker
             phoneTextBox.Clear();
             cityTextBox.Clear();
             countryTextBox.Clear();
+        }
+
+        private void addAppointmentButton_Click(object sender, EventArgs e)
+        {
+            string errorMessage;
+            string errorMessages = "";
+            DateTime startDateTime;
+            DateTime endDateTime;
+            string customerName;
+            string selectedType = "";
+            int customerId;
+            bool validForm = true;
+
+            // Creating a new appointment object
+            Appointment newAppointment = new Appointment();
+
+            // Pulling out the parts we want from the DateTimePickers
+            DateTime selectedDate = dateTimePicker.Value.Date;
+            TimeSpan selectedStartTime = startTimePicker.Value.TimeOfDay;
+            TimeSpan selectedEndTime = endTimePicker.Value.TimeOfDay;
+
+            //Combining into legible DateTimes
+            startDateTime = selectedDate.Add(selectedStartTime);
+            endDateTime = selectedDate.Add(selectedEndTime);
+
+            // Validate Appointment Date
+            if (!Validation.ValidateDateTime(startDateTime, out errorMessage))
+            {
+                errorMessages += errorMessage + "\n";
+                validForm = false;
+            }
+            else
+            {
+                if (Validation.ValidateAppointmentTime(startDateTime, endDateTime, AppointmentManager.AllAppointments, out errorMessage))
+                {
+                    errorMessages += errorMessage + "\n";
+                    validForm = false;
+                }
+                else
+                {
+                    newAppointment.Start = startDateTime;
+                    newAppointment.End = endDateTime;
+                }
+            }
+            if(!Validation.ValidateString(nameTextBox.Text, out errorMessage))
+            {
+                errorMessages += errorMessage + "\n";
+                validForm = false;
+            }
+            else
+            {
+                customerName = nameTextBox.Text;
+                newAppointment.Customer = customerName;
+            }
+
+            selectedType = Enum.GetName(typeof(AppointmentType), typeComboBox.SelectedIndex);
+            newAppointment.Type = selectedType;
+            newAppointment.UserId = _userId;
+
+            
+
+            if (validForm)
+            {
+                var sqlStatement = "Hello. This is where you left off.";
+            }
         }
     }
 }
