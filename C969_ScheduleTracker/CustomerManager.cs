@@ -1,27 +1,40 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.VisualBasic.ApplicationServices;
+using System.ComponentModel;
 
 namespace C969_ScheduleTracker;
 
-public class CustomerManager
+public static class CustomerManager
 {
-    private BindingList<Customer> _allCustomers = new BindingList<Customer>();
+    private static BindingList<Customer> _allCustomers = new BindingList<Customer>();
+    public static BindingList<Customer> AllCustomers => _allCustomers;
 
-    public void AddCustomer(Customer customer)
+    public static void LoadCustomersFromDb(BindingList<Customer> customers)
+    {
+        _allCustomers.Clear();
+        foreach (var customer in customers)
+        {
+            _allCustomers.Add(customer);
+        }
+    }
+
+    public static void AddCustomer(Customer customer)
     {
         //implementation
         _allCustomers.Add(customer);
     }
 
-    public void RemoveCustomer(Customer customer)
+    public static void RemoveCustomer(Customer customer)
     {
         //implementation
         _allCustomers.Remove(customer);
     }
 
-    public Customer GetCustomer(int customerId)
+    public static BindingList<Customer> GetCustomerById(int customerId)
     {
         //implementation
-        return _allCustomers[customerId];
+        return new BindingList<Customer>(_allCustomers.Where(customer => customer.CustomerId == customerId).ToList());
     }
+
+
 
 }

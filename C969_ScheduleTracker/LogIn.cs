@@ -2,6 +2,7 @@ namespace C969_ScheduleTracker
 {
     public partial class LogIn : Form
     {
+        public int UserID {get; set; }
         private LocalizationManager _localizationManager;
         public LogIn()
         {
@@ -21,13 +22,17 @@ namespace C969_ScheduleTracker
             if (!String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password))
             {
                 var query = DbManager.GetAuthenticationString(username.Trim());
+                var result = DbManager.ExecuteQueryToBindingList<User>(query);
 
-                if (DbManager.ExecuteQueryToList(query).Count > 0 && password == DbManager.ExecuteQueryToList(query)[0]["password"].ToString())
+                if (result.Count > 0 && password == result[0].Password.ToString())
                 {
                     logger.logSuccess(username, DateTime.Now);
+
+                    // Grab the user ID to bring it to the Manager Form
+                    UserID = result[0].UserId;
+
                     DialogResult = DialogResult.OK;
                     Close();
-
                 }
                 else
                 {

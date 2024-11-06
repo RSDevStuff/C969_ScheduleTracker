@@ -2,24 +2,38 @@
 
 namespace C969_ScheduleTracker;
 
-public class AppointmentManager
+public static class AppointmentManager
 {
     private static BindingList<Appointment> _allAppointments = new BindingList<Appointment>();
     public static BindingList<Appointment> AllAppointments => _allAppointments;
 
+
+    public static void LoadAppointmentsFromDb(BindingList<Appointment> appointments)
+    {
+        _allAppointments.Clear();
+        foreach (var appointment in appointments)
+        {
+            _allAppointments.Add(appointment);
+        }
+    }
     public static void AddAppointment(Appointment appointment)
     {
-        //Implementation
+        _allAppointments.Add(appointment);
     }
 
     public static void RemoveAppointment(Appointment appointment)
     {
-        //Implementation
+        _allAppointments.Remove(appointment);
     }
 
-    public static BindingList<Appointment> GetAppointmentByUserId(User user)
+    public static BindingList<Appointment> GetAppointmentByUserId(int userId)
     {
         //Implementation
-        return new BindingList<Appointment>(_allAppointments.Where(appointment => appointment.AssignedUser == user).ToList());
+        return new BindingList<Appointment>(_allAppointments.Where(appointment => appointment.UserId == userId).ToList());
+    }
+
+    public static BindingList<Appointment> GetAppointmentByUserIdAndDate(int userId, DateTime startDate, DateTime endDate)
+    {
+        return new BindingList<Appointment>(_allAppointments.Where(appointment => appointment.Start >= startDate && appointment.Start <= endDate).ToList());
     }
 }

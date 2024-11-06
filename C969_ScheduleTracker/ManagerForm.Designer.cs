@@ -30,48 +30,50 @@
         {
             managerFormTabControl = new TabControl();
             appointmentsTab = new TabPage();
-            customersTab = new TabPage();
-            selectedAppointmentLabel = new Label();
-            dateLabel = new Label();
-            dateTextBox = new TextBox();
-            startsTextBox = new TextBox();
-            startsLabel = new Label();
-            endsTextBox = new TextBox();
-            endsLabel = new Label();
+            clearButton = new Button();
+            exitButton = new Button();
+            reportsButton = new Button();
+            updateAppointmentButton = new Button();
+            removeAppointmentButton = new Button();
+            addAppointmentButton = new Button();
+            dateRangeBox = new ComboBox();
+            dateRangeLabel = new Label();
+            appointmentGridView = new DataGridView();
+            typeComboBox = new ComboBox();
+            typeLabel = new Label();
             customerTextBox = new TextBox();
             customerLabel = new Label();
-            typeLabel = new Label();
-            typeComboBox = new ComboBox();
-            appointmentGridView = new DataGridView();
-            dateRangeLabel = new Label();
-            comboBox1 = new ComboBox();
-            addAppointmentButton = new Button();
-            removeAppointmentButton = new Button();
-            updateAppointmentButton = new Button();
-            reportsButton = new Button();
-            exitButton = new Button();
+            endsTextBox = new TextBox();
+            endsLabel = new Label();
+            startsTextBox = new TextBox();
+            startsLabel = new Label();
+            dateTextBox = new TextBox();
+            dateLabel = new Label();
+            selectedAppointmentLabel = new Label();
+            customersTab = new TabPage();
+            countryTextBox = new TextBox();
+            custClearButton = new Button();
+            searchTextBox = new TextBox();
             customerExitButton = new Button();
             updateCustomerButton = new Button();
             removeCustomerButton = new Button();
             addCustomerButton = new Button();
             searchLabel = new Label();
             customerGridView = new DataGridView();
-            countryComboBox = new ComboBox();
             countryLabel = new Label();
             cityTextBox = new TextBox();
             cityLabel = new Label();
-            textBox2 = new TextBox();
-            phoneTextBox = new Label();
+            phoneTextBox = new TextBox();
+            phoneTextLabel = new Label();
             addressTextBox = new TextBox();
             addressLabel = new Label();
             nameTextBox = new TextBox();
             nameLabel = new Label();
             customerInformationLabel = new Label();
-            searchTextBox = new TextBox();
             managerFormTabControl.SuspendLayout();
             appointmentsTab.SuspendLayout();
-            customersTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)appointmentGridView).BeginInit();
+            customersTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)customerGridView).BeginInit();
             SuspendLayout();
             // 
@@ -83,17 +85,18 @@
             managerFormTabControl.Location = new Point(0, -2);
             managerFormTabControl.Name = "managerFormTabControl";
             managerFormTabControl.SelectedIndex = 0;
-            managerFormTabControl.Size = new Size(772, 372);
+            managerFormTabControl.Size = new Size(812, 372);
             managerFormTabControl.TabIndex = 0;
             // 
             // appointmentsTab
             // 
+            appointmentsTab.Controls.Add(clearButton);
             appointmentsTab.Controls.Add(exitButton);
             appointmentsTab.Controls.Add(reportsButton);
             appointmentsTab.Controls.Add(updateAppointmentButton);
             appointmentsTab.Controls.Add(removeAppointmentButton);
             appointmentsTab.Controls.Add(addAppointmentButton);
-            appointmentsTab.Controls.Add(comboBox1);
+            appointmentsTab.Controls.Add(dateRangeBox);
             appointmentsTab.Controls.Add(dateRangeLabel);
             appointmentsTab.Controls.Add(appointmentGridView);
             appointmentsTab.Controls.Add(typeComboBox);
@@ -110,96 +113,111 @@
             appointmentsTab.Location = new Point(4, 30);
             appointmentsTab.Name = "appointmentsTab";
             appointmentsTab.Padding = new Padding(3);
-            appointmentsTab.Size = new Size(764, 338);
+            appointmentsTab.Size = new Size(804, 338);
             appointmentsTab.TabIndex = 0;
             appointmentsTab.Text = "Appointments";
             appointmentsTab.UseVisualStyleBackColor = true;
             // 
-            // customersTab
+            // clearButton
             // 
-            customersTab.Controls.Add(searchTextBox);
-            customersTab.Controls.Add(customerExitButton);
-            customersTab.Controls.Add(updateCustomerButton);
-            customersTab.Controls.Add(removeCustomerButton);
-            customersTab.Controls.Add(addCustomerButton);
-            customersTab.Controls.Add(searchLabel);
-            customersTab.Controls.Add(customerGridView);
-            customersTab.Controls.Add(countryComboBox);
-            customersTab.Controls.Add(countryLabel);
-            customersTab.Controls.Add(cityTextBox);
-            customersTab.Controls.Add(cityLabel);
-            customersTab.Controls.Add(textBox2);
-            customersTab.Controls.Add(phoneTextBox);
-            customersTab.Controls.Add(addressTextBox);
-            customersTab.Controls.Add(addressLabel);
-            customersTab.Controls.Add(nameTextBox);
-            customersTab.Controls.Add(nameLabel);
-            customersTab.Controls.Add(customerInformationLabel);
-            customersTab.Location = new Point(4, 30);
-            customersTab.Name = "customersTab";
-            customersTab.Padding = new Padding(3);
-            customersTab.Size = new Size(764, 338);
-            customersTab.TabIndex = 1;
-            customersTab.Text = "Customers";
-            customersTab.UseVisualStyleBackColor = true;
+            clearButton.Location = new Point(251, 293);
+            clearButton.Name = "clearButton";
+            clearButton.Size = new Size(75, 39);
+            clearButton.TabIndex = 19;
+            clearButton.Text = "Clear";
+            clearButton.UseVisualStyleBackColor = true;
+            clearButton.Click += clearButton_Click;
             // 
-            // selectedAppointmentLabel
+            // exitButton
             // 
-            selectedAppointmentLabel.AutoSize = true;
-            selectedAppointmentLabel.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            selectedAppointmentLabel.Location = new Point(3, 11);
-            selectedAppointmentLabel.Name = "selectedAppointmentLabel";
-            selectedAppointmentLabel.Size = new Size(181, 21);
-            selectedAppointmentLabel.TabIndex = 0;
-            selectedAppointmentLabel.Text = "Selected Appointment";
+            exitButton.Location = new Point(719, 293);
+            exitButton.Name = "exitButton";
+            exitButton.Size = new Size(75, 39);
+            exitButton.TabIndex = 18;
+            exitButton.Text = "Exit";
+            exitButton.UseVisualStyleBackColor = true;
             // 
-            // dateLabel
+            // reportsButton
             // 
-            dateLabel.AutoSize = true;
-            dateLabel.Location = new Point(5, 46);
-            dateLabel.Name = "dateLabel";
-            dateLabel.Size = new Size(42, 21);
-            dateLabel.TabIndex = 1;
-            dateLabel.Text = "Date";
+            reportsButton.Location = new Point(638, 293);
+            reportsButton.Name = "reportsButton";
+            reportsButton.Size = new Size(75, 39);
+            reportsButton.TabIndex = 17;
+            reportsButton.Text = "Reports";
+            reportsButton.UseVisualStyleBackColor = true;
             // 
-            // dateTextBox
+            // updateAppointmentButton
             // 
-            dateTextBox.Location = new Point(89, 43);
-            dateTextBox.Name = "dateTextBox";
-            dateTextBox.Size = new Size(133, 29);
-            dateTextBox.TabIndex = 2;
+            updateAppointmentButton.Location = new Point(170, 293);
+            updateAppointmentButton.Name = "updateAppointmentButton";
+            updateAppointmentButton.Size = new Size(75, 39);
+            updateAppointmentButton.TabIndex = 16;
+            updateAppointmentButton.Text = "Update";
+            updateAppointmentButton.UseVisualStyleBackColor = true;
             // 
-            // startsTextBox
+            // removeAppointmentButton
             // 
-            startsTextBox.Location = new Point(89, 78);
-            startsTextBox.Name = "startsTextBox";
-            startsTextBox.Size = new Size(133, 29);
-            startsTextBox.TabIndex = 4;
+            removeAppointmentButton.Location = new Point(89, 293);
+            removeAppointmentButton.Name = "removeAppointmentButton";
+            removeAppointmentButton.Size = new Size(75, 39);
+            removeAppointmentButton.TabIndex = 15;
+            removeAppointmentButton.Text = "Remove";
+            removeAppointmentButton.UseVisualStyleBackColor = true;
             // 
-            // startsLabel
+            // addAppointmentButton
             // 
-            startsLabel.AutoSize = true;
-            startsLabel.Location = new Point(5, 81);
-            startsLabel.Name = "startsLabel";
-            startsLabel.Size = new Size(49, 21);
-            startsLabel.TabIndex = 3;
-            startsLabel.Text = "Starts";
+            addAppointmentButton.Location = new Point(8, 293);
+            addAppointmentButton.Name = "addAppointmentButton";
+            addAppointmentButton.Size = new Size(75, 39);
+            addAppointmentButton.TabIndex = 14;
+            addAppointmentButton.Text = "Add";
+            addAppointmentButton.UseVisualStyleBackColor = true;
             // 
-            // endsTextBox
+            // dateRangeBox
             // 
-            endsTextBox.Location = new Point(89, 113);
-            endsTextBox.Name = "endsTextBox";
-            endsTextBox.Size = new Size(133, 29);
-            endsTextBox.TabIndex = 6;
+            dateRangeBox.FormattingEnabled = true;
+            dateRangeBox.Items.AddRange(new object[] { "All", "Today", "Week", "Month", "Year" });
+            dateRangeBox.Location = new Point(678, 6);
+            dateRangeBox.Name = "dateRangeBox";
+            dateRangeBox.Size = new Size(116, 29);
+            dateRangeBox.TabIndex = 13;
+            dateRangeBox.SelectedIndexChanged += dateRangeBox_SelectedIndexChanged;
             // 
-            // endsLabel
+            // dateRangeLabel
             // 
-            endsLabel.AutoSize = true;
-            endsLabel.Location = new Point(5, 116);
-            endsLabel.Name = "endsLabel";
-            endsLabel.Size = new Size(43, 21);
-            endsLabel.TabIndex = 5;
-            endsLabel.Text = "Ends";
+            dateRangeLabel.AutoSize = true;
+            dateRangeLabel.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            dateRangeLabel.Location = new Point(582, 9);
+            dateRangeLabel.Name = "dateRangeLabel";
+            dateRangeLabel.Size = new Size(98, 21);
+            dateRangeLabel.TabIndex = 12;
+            dateRangeLabel.Text = "Date Range";
+            // 
+            // appointmentGridView
+            // 
+            appointmentGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            appointmentGridView.Location = new Point(249, 43);
+            appointmentGridView.Name = "appointmentGridView";
+            appointmentGridView.Size = new Size(545, 244);
+            appointmentGridView.TabIndex = 11;
+            appointmentGridView.SelectionChanged += appointmentGridView_SelectionChanged;
+            // 
+            // typeComboBox
+            // 
+            typeComboBox.FormattingEnabled = true;
+            typeComboBox.Location = new Point(89, 186);
+            typeComboBox.Name = "typeComboBox";
+            typeComboBox.Size = new Size(133, 29);
+            typeComboBox.TabIndex = 10;
+            // 
+            // typeLabel
+            // 
+            typeLabel.AutoSize = true;
+            typeLabel.Location = new Point(5, 186);
+            typeLabel.Name = "typeLabel";
+            typeLabel.Size = new Size(42, 21);
+            typeLabel.TabIndex = 9;
+            typeLabel.Text = "Type";
             // 
             // customerTextBox
             // 
@@ -217,97 +235,120 @@
             customerLabel.TabIndex = 7;
             customerLabel.Text = "Customer";
             // 
-            // typeLabel
+            // endsTextBox
             // 
-            typeLabel.AutoSize = true;
-            typeLabel.Location = new Point(5, 186);
-            typeLabel.Name = "typeLabel";
-            typeLabel.Size = new Size(42, 21);
-            typeLabel.TabIndex = 9;
-            typeLabel.Text = "Type";
+            endsTextBox.Location = new Point(89, 113);
+            endsTextBox.Name = "endsTextBox";
+            endsTextBox.Size = new Size(133, 29);
+            endsTextBox.TabIndex = 6;
             // 
-            // typeComboBox
+            // endsLabel
             // 
-            typeComboBox.FormattingEnabled = true;
-            typeComboBox.Location = new Point(89, 186);
-            typeComboBox.Name = "typeComboBox";
-            typeComboBox.Size = new Size(133, 29);
-            typeComboBox.TabIndex = 10;
+            endsLabel.AutoSize = true;
+            endsLabel.Location = new Point(5, 116);
+            endsLabel.Name = "endsLabel";
+            endsLabel.Size = new Size(43, 21);
+            endsLabel.TabIndex = 5;
+            endsLabel.Text = "Ends";
             // 
-            // appointmentGridView
+            // startsTextBox
             // 
-            appointmentGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            appointmentGridView.Location = new Point(249, 43);
-            appointmentGridView.Name = "appointmentGridView";
-            appointmentGridView.Size = new Size(493, 244);
-            appointmentGridView.TabIndex = 11;
+            startsTextBox.Location = new Point(89, 78);
+            startsTextBox.Name = "startsTextBox";
+            startsTextBox.Size = new Size(133, 29);
+            startsTextBox.TabIndex = 4;
             // 
-            // dateRangeLabel
+            // startsLabel
             // 
-            dateRangeLabel.AutoSize = true;
-            dateRangeLabel.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            dateRangeLabel.Location = new Point(530, 11);
-            dateRangeLabel.Name = "dateRangeLabel";
-            dateRangeLabel.Size = new Size(98, 21);
-            dateRangeLabel.TabIndex = 12;
-            dateRangeLabel.Text = "Date Range";
+            startsLabel.AutoSize = true;
+            startsLabel.Location = new Point(5, 81);
+            startsLabel.Name = "startsLabel";
+            startsLabel.Size = new Size(49, 21);
+            startsLabel.TabIndex = 3;
+            startsLabel.Text = "Starts";
             // 
-            // comboBox1
+            // dateTextBox
             // 
-            comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(626, 5);
-            comboBox1.Name = "comboBox1";
-            comboBox1.Size = new Size(116, 29);
-            comboBox1.TabIndex = 13;
+            dateTextBox.Location = new Point(89, 43);
+            dateTextBox.Name = "dateTextBox";
+            dateTextBox.Size = new Size(133, 29);
+            dateTextBox.TabIndex = 2;
             // 
-            // addAppointmentButton
+            // dateLabel
             // 
-            addAppointmentButton.Location = new Point(8, 293);
-            addAppointmentButton.Name = "addAppointmentButton";
-            addAppointmentButton.Size = new Size(75, 39);
-            addAppointmentButton.TabIndex = 14;
-            addAppointmentButton.Text = "Add";
-            addAppointmentButton.UseVisualStyleBackColor = true;
+            dateLabel.AutoSize = true;
+            dateLabel.Location = new Point(5, 46);
+            dateLabel.Name = "dateLabel";
+            dateLabel.Size = new Size(42, 21);
+            dateLabel.TabIndex = 1;
+            dateLabel.Text = "Date";
             // 
-            // removeAppointmentButton
+            // selectedAppointmentLabel
             // 
-            removeAppointmentButton.Location = new Point(89, 293);
-            removeAppointmentButton.Name = "removeAppointmentButton";
-            removeAppointmentButton.Size = new Size(75, 39);
-            removeAppointmentButton.TabIndex = 15;
-            removeAppointmentButton.Text = "Remove";
-            removeAppointmentButton.UseVisualStyleBackColor = true;
+            selectedAppointmentLabel.AutoSize = true;
+            selectedAppointmentLabel.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            selectedAppointmentLabel.Location = new Point(3, 11);
+            selectedAppointmentLabel.Name = "selectedAppointmentLabel";
+            selectedAppointmentLabel.Size = new Size(181, 21);
+            selectedAppointmentLabel.TabIndex = 0;
+            selectedAppointmentLabel.Text = "Selected Appointment";
             // 
-            // updateAppointmentButton
+            // customersTab
             // 
-            updateAppointmentButton.Location = new Point(170, 293);
-            updateAppointmentButton.Name = "updateAppointmentButton";
-            updateAppointmentButton.Size = new Size(75, 39);
-            updateAppointmentButton.TabIndex = 16;
-            updateAppointmentButton.Text = "Update";
-            updateAppointmentButton.UseVisualStyleBackColor = true;
+            customersTab.Controls.Add(countryTextBox);
+            customersTab.Controls.Add(custClearButton);
+            customersTab.Controls.Add(searchTextBox);
+            customersTab.Controls.Add(customerExitButton);
+            customersTab.Controls.Add(updateCustomerButton);
+            customersTab.Controls.Add(removeCustomerButton);
+            customersTab.Controls.Add(addCustomerButton);
+            customersTab.Controls.Add(searchLabel);
+            customersTab.Controls.Add(customerGridView);
+            customersTab.Controls.Add(countryLabel);
+            customersTab.Controls.Add(cityTextBox);
+            customersTab.Controls.Add(cityLabel);
+            customersTab.Controls.Add(phoneTextBox);
+            customersTab.Controls.Add(phoneTextLabel);
+            customersTab.Controls.Add(addressTextBox);
+            customersTab.Controls.Add(addressLabel);
+            customersTab.Controls.Add(nameTextBox);
+            customersTab.Controls.Add(nameLabel);
+            customersTab.Controls.Add(customerInformationLabel);
+            customersTab.Location = new Point(4, 30);
+            customersTab.Name = "customersTab";
+            customersTab.Padding = new Padding(3);
+            customersTab.Size = new Size(804, 338);
+            customersTab.TabIndex = 1;
+            customersTab.Text = "Customers";
+            customersTab.UseVisualStyleBackColor = true;
             // 
-            // reportsButton
+            // countryTextBox
             // 
-            reportsButton.Location = new Point(251, 293);
-            reportsButton.Name = "reportsButton";
-            reportsButton.Size = new Size(75, 39);
-            reportsButton.TabIndex = 17;
-            reportsButton.Text = "Reports";
-            reportsButton.UseVisualStyleBackColor = true;
+            countryTextBox.Location = new Point(89, 183);
+            countryTextBox.Name = "countryTextBox";
+            countryTextBox.Size = new Size(133, 29);
+            countryTextBox.TabIndex = 40;
             // 
-            // exitButton
+            // custClearButton
             // 
-            exitButton.Location = new Point(667, 293);
-            exitButton.Name = "exitButton";
-            exitButton.Size = new Size(75, 39);
-            exitButton.TabIndex = 18;
-            exitButton.Text = "Exit";
-            exitButton.UseVisualStyleBackColor = true;
+            custClearButton.Location = new Point(251, 293);
+            custClearButton.Name = "custClearButton";
+            custClearButton.Size = new Size(75, 39);
+            custClearButton.TabIndex = 39;
+            custClearButton.Text = "Clear";
+            custClearButton.UseVisualStyleBackColor = true;
+            custClearButton.Click += custClearButton_Click;
+            // 
+            // searchTextBox
+            // 
+            searchTextBox.Location = new Point(661, 8);
+            searchTextBox.Name = "searchTextBox";
+            searchTextBox.Size = new Size(133, 29);
+            searchTextBox.TabIndex = 38;
             // 
             // customerExitButton
             // 
-            customerExitButton.Location = new Point(667, 293);
+            customerExitButton.Location = new Point(719, 293);
             customerExitButton.Name = "customerExitButton";
             customerExitButton.Size = new Size(75, 39);
             customerExitButton.TabIndex = 37;
@@ -345,7 +386,7 @@
             // 
             searchLabel.AutoSize = true;
             searchLabel.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            searchLabel.Location = new Point(542, 11);
+            searchLabel.Location = new Point(594, 11);
             searchLabel.Name = "searchLabel";
             searchLabel.Size = new Size(61, 21);
             searchLabel.TabIndex = 31;
@@ -353,19 +394,13 @@
             // 
             // customerGridView
             // 
+            customerGridView.AllowUserToDeleteRows = false;
             customerGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             customerGridView.Location = new Point(249, 43);
+            customerGridView.MultiSelect = false;
             customerGridView.Name = "customerGridView";
-            customerGridView.Size = new Size(493, 244);
+            customerGridView.Size = new Size(545, 244);
             customerGridView.TabIndex = 30;
-            // 
-            // countryComboBox
-            // 
-            countryComboBox.FormattingEnabled = true;
-            countryComboBox.Location = new Point(89, 186);
-            countryComboBox.Name = "countryComboBox";
-            countryComboBox.Size = new Size(133, 29);
-            countryComboBox.TabIndex = 29;
             // 
             // countryLabel
             // 
@@ -392,21 +427,21 @@
             cityLabel.TabIndex = 26;
             cityLabel.Text = "City";
             // 
-            // textBox2
-            // 
-            textBox2.Location = new Point(89, 113);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(133, 29);
-            textBox2.TabIndex = 25;
-            // 
             // phoneTextBox
             // 
-            phoneTextBox.AutoSize = true;
-            phoneTextBox.Location = new Point(5, 116);
+            phoneTextBox.Location = new Point(89, 113);
             phoneTextBox.Name = "phoneTextBox";
-            phoneTextBox.Size = new Size(54, 21);
-            phoneTextBox.TabIndex = 24;
-            phoneTextBox.Text = "Phone";
+            phoneTextBox.Size = new Size(133, 29);
+            phoneTextBox.TabIndex = 25;
+            // 
+            // phoneTextLabel
+            // 
+            phoneTextLabel.AutoSize = true;
+            phoneTextLabel.Location = new Point(5, 116);
+            phoneTextLabel.Name = "phoneTextLabel";
+            phoneTextLabel.Size = new Size(54, 21);
+            phoneTextLabel.TabIndex = 24;
+            phoneTextLabel.Text = "Phone";
             // 
             // addressTextBox
             // 
@@ -450,27 +485,20 @@
             customerInformationLabel.TabIndex = 19;
             customerInformationLabel.Text = "Customer Information";
             // 
-            // searchTextBox
-            // 
-            searchTextBox.Location = new Point(609, 8);
-            searchTextBox.Name = "searchTextBox";
-            searchTextBox.Size = new Size(133, 29);
-            searchTextBox.TabIndex = 38;
-            // 
             // ManagerForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(769, 366);
+            ClientSize = new Size(810, 366);
             Controls.Add(managerFormTabControl);
             Name = "ManagerForm";
             Text = "Schedule Manager";
             managerFormTabControl.ResumeLayout(false);
             appointmentsTab.ResumeLayout(false);
             appointmentsTab.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)appointmentGridView).EndInit();
             customersTab.ResumeLayout(false);
             customersTab.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)appointmentGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)customerGridView).EndInit();
             ResumeLayout(false);
         }
@@ -491,7 +519,7 @@
         private Label endsLabel;
         private TextBox startsTextBox;
         private Label startsLabel;
-        private ComboBox comboBox1;
+        private ComboBox dateRangeBox;
         private Label dateRangeLabel;
         private DataGridView appointmentGridView;
         private Button removeAppointmentButton;
@@ -506,16 +534,18 @@
         private Button addCustomerButton;
         private Label searchLabel;
         private DataGridView customerGridView;
-        private ComboBox countryComboBox;
         private Label countryLabel;
         private TextBox cityTextBox;
         private Label cityLabel;
-        private TextBox textBox2;
-        private Label phoneTextBox;
+        private TextBox phoneTextBox;
+        private Label phoneTextLabel;
         private TextBox addressTextBox;
         private Label addressLabel;
         private TextBox nameTextBox;
         private Label nameLabel;
         private Label customerInformationLabel;
+        private Button clearButton;
+        private Button custClearButton;
+        private TextBox countryTextBox;
     }
 }

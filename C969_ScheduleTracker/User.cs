@@ -8,8 +8,7 @@ public class User
     public string Username { get; set; }
     public string Password { get; set; }
 
-    private BindingList<Appointment> _userAppointments = new BindingList<Appointment>();
-
+    public User(){}
     public User(int userId, string username, string password)
     {
         UserId = userId;

@@ -14,22 +14,25 @@ namespace C969_ScheduleTracker
 {
     public class Appointment
     {
+        public string Customer {get; set; }
         public DateTime Date { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public string Type { get; set; }
-        public User AssignedUser { get; set; }
-        public Customer AssignedCustomer { get; set; }
+        public int UserId { get; set; }
+        public int CustomerId { get; set; }
 
-        public Appointment(DateTime date, DateTime start, DateTime end, string type, User assignedUser,
-            Customer assignedCustomer)
+        public Appointment(){}
+        public Appointment(string customerName, DateTime date, DateTime start, DateTime end, string type, int assignedUser,
+            int assignedCustomer)
         {
+            Customer = customerName;
             Date = date;
             Start = start;
             End = end;
             Type = type;
-            AssignedUser = assignedUser;
-            AssignedCustomer = assignedCustomer;
+            UserId = assignedUser;
+            CustomerId = assignedCustomer;
         }
     }
 }
