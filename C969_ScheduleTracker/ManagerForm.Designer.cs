@@ -30,6 +30,8 @@
         {
             managerFormTabControl = new TabControl();
             appointmentsTab = new TabPage();
+            customerIdBox = new TextBox();
+            customerIdLabel = new Label();
             endTimePicker = new DateTimePicker();
             startTimePicker = new DateTimePicker();
             dateTimePicker = new DateTimePicker();
@@ -51,6 +53,8 @@
             dateLabel = new Label();
             selectedAppointmentLabel = new Label();
             customersTab = new TabPage();
+            idBox = new TextBox();
+            idLabel = new Label();
             countryTextBox = new TextBox();
             custClearButton = new Button();
             searchTextBox = new TextBox();
@@ -90,6 +94,8 @@
             // 
             // appointmentsTab
             // 
+            appointmentsTab.Controls.Add(customerIdBox);
+            appointmentsTab.Controls.Add(customerIdLabel);
             appointmentsTab.Controls.Add(endTimePicker);
             appointmentsTab.Controls.Add(startTimePicker);
             appointmentsTab.Controls.Add(dateTimePicker);
@@ -118,10 +124,27 @@
             appointmentsTab.Text = "Appointments";
             appointmentsTab.UseVisualStyleBackColor = true;
             // 
+            // customerIdBox
+            // 
+            customerIdBox.Location = new Point(99, 189);
+            customerIdBox.Name = "customerIdBox";
+            customerIdBox.Size = new Size(133, 29);
+            customerIdBox.TabIndex = 24;
+            customerIdBox.TextChanged += customerIdBox_TextChanged;
+            // 
+            // customerIdLabel
+            // 
+            customerIdLabel.AutoSize = true;
+            customerIdLabel.Location = new Point(5, 192);
+            customerIdLabel.Name = "customerIdLabel";
+            customerIdLabel.Size = new Size(97, 21);
+            customerIdLabel.TabIndex = 23;
+            customerIdLabel.Text = "Customer ID";
+            // 
             // endTimePicker
             // 
             endTimePicker.Format = DateTimePickerFormat.Time;
-            endTimePicker.Location = new Point(89, 110);
+            endTimePicker.Location = new Point(99, 119);
             endTimePicker.Name = "endTimePicker";
             endTimePicker.ShowUpDown = true;
             endTimePicker.Size = new Size(133, 29);
@@ -130,7 +153,7 @@
             // startTimePicker
             // 
             startTimePicker.Format = DateTimePickerFormat.Time;
-            startTimePicker.Location = new Point(89, 75);
+            startTimePicker.Location = new Point(99, 84);
             startTimePicker.Name = "startTimePicker";
             startTimePicker.ShowUpDown = true;
             startTimePicker.Size = new Size(133, 29);
@@ -139,7 +162,7 @@
             // dateTimePicker
             // 
             dateTimePicker.Format = DateTimePickerFormat.Short;
-            dateTimePicker.Location = new Point(89, 43);
+            dateTimePicker.Location = new Point(99, 49);
             dateTimePicker.Name = "dateTimePicker";
             dateTimePicker.Size = new Size(133, 29);
             dateTimePicker.TabIndex = 20;
@@ -149,7 +172,7 @@
             clearButton.Location = new Point(251, 293);
             clearButton.Name = "clearButton";
             clearButton.Size = new Size(75, 39);
-            clearButton.TabIndex = 19;
+            clearButton.TabIndex = 29;
             clearButton.Text = "Clear";
             clearButton.UseVisualStyleBackColor = true;
             clearButton.Click += clearButton_Click;
@@ -159,7 +182,7 @@
             exitButton.Location = new Point(719, 293);
             exitButton.Name = "exitButton";
             exitButton.Size = new Size(75, 39);
-            exitButton.TabIndex = 18;
+            exitButton.TabIndex = 31;
             exitButton.Text = "Exit";
             exitButton.UseVisualStyleBackColor = true;
             // 
@@ -168,7 +191,7 @@
             reportsButton.Location = new Point(638, 293);
             reportsButton.Name = "reportsButton";
             reportsButton.Size = new Size(75, 39);
-            reportsButton.TabIndex = 17;
+            reportsButton.TabIndex = 30;
             reportsButton.Text = "Reports";
             reportsButton.UseVisualStyleBackColor = true;
             // 
@@ -177,7 +200,7 @@
             updateAppointmentButton.Location = new Point(170, 293);
             updateAppointmentButton.Name = "updateAppointmentButton";
             updateAppointmentButton.Size = new Size(75, 39);
-            updateAppointmentButton.TabIndex = 16;
+            updateAppointmentButton.TabIndex = 28;
             updateAppointmentButton.Text = "Update";
             updateAppointmentButton.UseVisualStyleBackColor = true;
             // 
@@ -186,7 +209,7 @@
             removeAppointmentButton.Location = new Point(89, 293);
             removeAppointmentButton.Name = "removeAppointmentButton";
             removeAppointmentButton.Size = new Size(75, 39);
-            removeAppointmentButton.TabIndex = 15;
+            removeAppointmentButton.TabIndex = 27;
             removeAppointmentButton.Text = "Remove";
             removeAppointmentButton.UseVisualStyleBackColor = true;
             // 
@@ -195,7 +218,7 @@
             addAppointmentButton.Location = new Point(8, 293);
             addAppointmentButton.Name = "addAppointmentButton";
             addAppointmentButton.Size = new Size(75, 39);
-            addAppointmentButton.TabIndex = 14;
+            addAppointmentButton.TabIndex = 26;
             addAppointmentButton.Text = "Add";
             addAppointmentButton.UseVisualStyleBackColor = true;
             addAppointmentButton.Click += addAppointmentButton_Click;
@@ -222,9 +245,13 @@
             // 
             // appointmentGridView
             // 
+            appointmentGridView.AllowUserToDeleteRows = false;
+            appointmentGridView.AllowUserToResizeColumns = false;
+            appointmentGridView.AllowUserToResizeRows = false;
             appointmentGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             appointmentGridView.Location = new Point(249, 41);
             appointmentGridView.Name = "appointmentGridView";
+            appointmentGridView.ReadOnly = true;
             appointmentGridView.Size = new Size(545, 244);
             appointmentGridView.TabIndex = 11;
             appointmentGridView.SelectionChanged += appointmentGridView_SelectionChanged;
@@ -232,15 +259,15 @@
             // typeComboBox
             // 
             typeComboBox.FormattingEnabled = true;
-            typeComboBox.Location = new Point(89, 186);
+            typeComboBox.Location = new Point(99, 154);
             typeComboBox.Name = "typeComboBox";
             typeComboBox.Size = new Size(133, 29);
-            typeComboBox.TabIndex = 10;
+            typeComboBox.TabIndex = 23;
             // 
             // typeLabel
             // 
             typeLabel.AutoSize = true;
-            typeLabel.Location = new Point(5, 186);
+            typeLabel.Location = new Point(8, 157);
             typeLabel.Name = "typeLabel";
             typeLabel.Size = new Size(42, 21);
             typeLabel.TabIndex = 9;
@@ -248,24 +275,24 @@
             // 
             // customerTextBox
             // 
-            customerTextBox.Location = new Point(89, 148);
+            customerTextBox.Location = new Point(99, 224);
             customerTextBox.Name = "customerTextBox";
             customerTextBox.Size = new Size(133, 29);
-            customerTextBox.TabIndex = 8;
+            customerTextBox.TabIndex = 25;
             // 
             // customerLabel
             // 
             customerLabel.AutoSize = true;
-            customerLabel.Location = new Point(5, 151);
+            customerLabel.Location = new Point(8, 227);
             customerLabel.Name = "customerLabel";
-            customerLabel.Size = new Size(78, 21);
+            customerLabel.Size = new Size(52, 21);
             customerLabel.TabIndex = 7;
-            customerLabel.Text = "Customer";
+            customerLabel.Text = "Name";
             // 
             // endsLabel
             // 
             endsLabel.AutoSize = true;
-            endsLabel.Location = new Point(5, 116);
+            endsLabel.Location = new Point(8, 125);
             endsLabel.Name = "endsLabel";
             endsLabel.Size = new Size(43, 21);
             endsLabel.TabIndex = 5;
@@ -274,7 +301,7 @@
             // startsLabel
             // 
             startsLabel.AutoSize = true;
-            startsLabel.Location = new Point(5, 81);
+            startsLabel.Location = new Point(8, 92);
             startsLabel.Name = "startsLabel";
             startsLabel.Size = new Size(49, 21);
             startsLabel.TabIndex = 3;
@@ -283,7 +310,7 @@
             // dateLabel
             // 
             dateLabel.AutoSize = true;
-            dateLabel.Location = new Point(5, 46);
+            dateLabel.Location = new Point(8, 55);
             dateLabel.Name = "dateLabel";
             dateLabel.Size = new Size(42, 21);
             dateLabel.TabIndex = 1;
@@ -301,6 +328,8 @@
             // 
             // customersTab
             // 
+            customersTab.Controls.Add(idBox);
+            customersTab.Controls.Add(idLabel);
             customersTab.Controls.Add(countryTextBox);
             customersTab.Controls.Add(custClearButton);
             customersTab.Controls.Add(searchTextBox);
@@ -328,19 +357,35 @@
             customersTab.Text = "Customers";
             customersTab.UseVisualStyleBackColor = true;
             // 
+            // idBox
+            // 
+            idBox.Location = new Point(89, 218);
+            idBox.Name = "idBox";
+            idBox.Size = new Size(133, 29);
+            idBox.TabIndex = 37;
+            // 
+            // idLabel
+            // 
+            idLabel.AutoSize = true;
+            idLabel.Location = new Point(8, 221);
+            idLabel.Name = "idLabel";
+            idLabel.Size = new Size(25, 21);
+            idLabel.TabIndex = 40;
+            idLabel.Text = "ID";
+            // 
             // countryTextBox
             // 
             countryTextBox.Location = new Point(89, 183);
             countryTextBox.Name = "countryTextBox";
             countryTextBox.Size = new Size(133, 29);
-            countryTextBox.TabIndex = 40;
+            countryTextBox.TabIndex = 36;
             // 
             // custClearButton
             // 
             custClearButton.Location = new Point(251, 293);
             custClearButton.Name = "custClearButton";
             custClearButton.Size = new Size(75, 39);
-            custClearButton.TabIndex = 39;
+            custClearButton.TabIndex = 42;
             custClearButton.Text = "Clear";
             custClearButton.UseVisualStyleBackColor = true;
             custClearButton.Click += custClearButton_Click;
@@ -357,7 +402,7 @@
             customerExitButton.Location = new Point(719, 293);
             customerExitButton.Name = "customerExitButton";
             customerExitButton.Size = new Size(75, 39);
-            customerExitButton.TabIndex = 37;
+            customerExitButton.TabIndex = 44;
             customerExitButton.Text = "Exit";
             customerExitButton.UseVisualStyleBackColor = true;
             // 
@@ -366,7 +411,7 @@
             updateCustomerButton.Location = new Point(170, 293);
             updateCustomerButton.Name = "updateCustomerButton";
             updateCustomerButton.Size = new Size(75, 39);
-            updateCustomerButton.TabIndex = 35;
+            updateCustomerButton.TabIndex = 40;
             updateCustomerButton.Text = "Update";
             updateCustomerButton.UseVisualStyleBackColor = true;
             // 
@@ -375,7 +420,7 @@
             removeCustomerButton.Location = new Point(89, 293);
             removeCustomerButton.Name = "removeCustomerButton";
             removeCustomerButton.Size = new Size(75, 39);
-            removeCustomerButton.TabIndex = 34;
+            removeCustomerButton.TabIndex = 39;
             removeCustomerButton.Text = "Remove";
             removeCustomerButton.UseVisualStyleBackColor = true;
             // 
@@ -384,7 +429,7 @@
             addCustomerButton.Location = new Point(8, 293);
             addCustomerButton.Name = "addCustomerButton";
             addCustomerButton.Size = new Size(75, 39);
-            addCustomerButton.TabIndex = 33;
+            addCustomerButton.TabIndex = 38;
             addCustomerButton.Text = "Add";
             addCustomerButton.UseVisualStyleBackColor = true;
             // 
@@ -401,10 +446,12 @@
             // customerGridView
             // 
             customerGridView.AllowUserToDeleteRows = false;
+            customerGridView.AllowUserToResizeRows = false;
             customerGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             customerGridView.Location = new Point(249, 43);
             customerGridView.MultiSelect = false;
             customerGridView.Name = "customerGridView";
+            customerGridView.ReadOnly = true;
             customerGridView.Size = new Size(545, 244);
             customerGridView.TabIndex = 30;
             // 
@@ -422,7 +469,7 @@
             cityTextBox.Location = new Point(89, 148);
             cityTextBox.Name = "cityTextBox";
             cityTextBox.Size = new Size(133, 29);
-            cityTextBox.TabIndex = 27;
+            cityTextBox.TabIndex = 35;
             // 
             // cityLabel
             // 
@@ -438,7 +485,7 @@
             phoneTextBox.Location = new Point(89, 113);
             phoneTextBox.Name = "phoneTextBox";
             phoneTextBox.Size = new Size(133, 29);
-            phoneTextBox.TabIndex = 25;
+            phoneTextBox.TabIndex = 34;
             // 
             // phoneTextLabel
             // 
@@ -454,7 +501,7 @@
             addressTextBox.Location = new Point(89, 78);
             addressTextBox.Name = "addressTextBox";
             addressTextBox.Size = new Size(133, 29);
-            addressTextBox.TabIndex = 23;
+            addressTextBox.TabIndex = 33;
             // 
             // addressLabel
             // 
@@ -470,7 +517,7 @@
             nameTextBox.Location = new Point(89, 43);
             nameTextBox.Name = "nameTextBox";
             nameTextBox.Size = new Size(133, 29);
-            nameTextBox.TabIndex = 21;
+            nameTextBox.TabIndex = 32;
             // 
             // nameLabel
             // 
@@ -553,5 +600,9 @@
         private DateTimePicker dateTimePicker;
         private DateTimePicker endTimePicker;
         private DateTimePicker startTimePicker;
+        private TextBox customerIdBox;
+        private Label customerIdLabel;
+        private TextBox idBox;
+        private Label idLabel;
     }
 }

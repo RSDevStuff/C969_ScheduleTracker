@@ -55,11 +55,22 @@ public static class Validation
     }
 
     // Validate customerID exists, given a customer name.
-    public static bool ValidateCustomerId(string customerName, BindingList<Customer> customers, out string errorMessage)
+    public static bool ValidateCustomerId(int customerId, BindingList<Customer> customers, out string customerName, out string errorMessage)
     {
-        errorMessage = "";
-        return true;
+        foreach (var customer in customers)
+        {
+            if (customer.CustomerId == customerId)
+            {
+                errorMessage = "";
+                customerName = customer.Name;
+                return true;
+            }
+        }
+        errorMessage = "Invalid customer ID. Does this customer exist?";
+        customerName = "";
+        return false;
     }
+
     // Make sure a string is not null or empty
     public static bool ValidateString(string input, out string errorMessage)
     {

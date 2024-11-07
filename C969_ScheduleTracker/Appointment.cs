@@ -34,6 +34,12 @@ namespace C969_ScheduleTracker
             UserId = assignedUser;
             CustomerId = assignedCustomer;
         }
+
+        public override string ToString()
+        {
+            return
+                $"Appointment Info\nDate:{Date.ToShortDateString()}\nStart:{Start.ToShortTimeString()}\nEnd:{End.ToShortTimeString()}\nType:{Type}\nCustomerId:{CustomerId.ToString()}\nUserId:{UserId.ToString()}";
+        }
     }
 }
 

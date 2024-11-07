@@ -118,7 +118,12 @@ namespace C969_ScheduleTracker
                     dateTimePicker.Value = Convert.ToDateTime(selectedRow.Cells["Date"].Value);
                     startTimePicker.Value = Convert.ToDateTime(selectedRow.Cells["Start"].Value);
                     endTimePicker.Value = Convert.ToDateTime(selectedRow.Cells["End"].Value);
+                    customerIdBox.Text = selectedRow.Cells["CustomerId"].Value?.ToString() ?? "";
+                    customerIdBox.Enabled = false;
                     customerTextBox.Text = selectedRow.Cells["Customer"].Value?.ToString() ?? "";
+                    addAppointmentButton.Enabled = false;
+                    removeAppointmentButton.Enabled = true;
+                    updateAppointmentButton.Enabled = true;
                     if (Enum.TryParse(typeof(AppointmentType), selectedRow.Cells["Type"].Value?.ToString(), out var appointmentType))
                     {
                         // Set the Type to the corresponding index of the enum value
@@ -143,12 +148,17 @@ namespace C969_ScheduleTracker
         private void clearButton_Click(object sender, EventArgs e)
         {
             appointmentGridView.ClearSelection();
-            _userId = -1;
             dateTimePicker.Value = DateTime.Now;
             startTimePicker.Value = DateTime.Now;
             endTimePicker.Value = DateTime.Now.AddHours(1);
             customerTextBox.Clear();
+            customerTextBox.Enabled = false;
+            customerIdBox.Clear();
+            customerIdBox.Enabled = true;
             typeComboBox.SelectedIndex = 5;
+            addAppointmentButton.Enabled = true;
+            updateAppointmentButton.Enabled = false;
+            removeAppointmentButton.Enabled = false;
         }
 
         // Logic for selected customer
@@ -165,6 +175,11 @@ namespace C969_ScheduleTracker
                     phoneTextBox.Text = selectedRow.Cells["Phone"].Value?.ToString() ?? "";
                     cityTextBox.Text = selectedRow.Cells["City"].Value?.ToString() ?? "";
                     countryTextBox.Text = selectedRow.Cells["Country"].Value?.ToString() ?? "";
+                    idBox.Text = selectedRow.Cells["CustomerId"].Value?.ToString() ?? "";
+                    idBox.Enabled = false;
+                    addCustomerButton.Enabled = false;
+                    updateCustomerButton.Enabled = true;
+                    removeCustomerButton.Enabled = true;
                 }
             }
         }
@@ -172,12 +187,16 @@ namespace C969_ScheduleTracker
         private void custClearButton_Click(object sender, EventArgs e)
         {
             customerGridView.ClearSelection();
-            _userId = -1;
             nameTextBox.Clear();
+            idBox.Clear();
+            idBox.Enabled = false;
             addressTextBox.Clear();
             phoneTextBox.Clear();
             cityTextBox.Clear();
             countryTextBox.Clear();
+            addCustomerButton.Enabled = true;
+            updateCustomerButton.Enabled = false;
+            removeCustomerButton.Enabled = false;
         }
 
         private void addAppointmentButton_Click(object sender, EventArgs e)
@@ -211,7 +230,8 @@ namespace C969_ScheduleTracker
             }
             else
             {
-                if (Validation.ValidateAppointmentTime(startDateTime, endDateTime, AppointmentManager.AllAppointments, out errorMessage))
+                if (Validation.ValidateAppointmentTime(startDateTime, endDateTime, AppointmentManager.AllAppointments,
+                        out errorMessage))
                 {
                     errorMessages += errorMessage + "\n";
                     validForm = false;
@@ -222,26 +242,68 @@ namespace C969_ScheduleTracker
                     newAppointment.End = endDateTime;
                 }
             }
-            if(!Validation.ValidateString(nameTextBox.Text, out errorMessage))
+
+            //Validate customer ID exists and is good
+            if (!Validation.ValidateInteger(customerIdBox.Text, out customerId, out errorMessage))
             {
-                errorMessages += errorMessage + "\n";
+                errorMessages += errorMessage;
                 validForm = false;
             }
             else
             {
-                customerName = nameTextBox.Text;
-                newAppointment.Customer = customerName;
+                if (!Validation.ValidateCustomerId(customerId, CustomerManager.AllCustomers, out customerName, out errorMessage)) 
+                {
+                    errorMessages += errorMessage + "\n";
+                    validForm = false;
+                }
+                else
+                { 
+                    newAppointment.Customer = customerName;
+                    newAppointment.CustomerId = customerId;
+                }
             }
 
             selectedType = Enum.GetName(typeof(AppointmentType), typeComboBox.SelectedIndex);
             newAppointment.Type = selectedType;
             newAppointment.UserId = _userId;
 
-            
-
             if (validForm)
             {
-                var sqlStatement = "Hello. This is where you left off.";
+                MessageBox.Show(newAppointment.ToString());
+            }
+            else
+            {
+                MessageBox.Show(errorMessages, "Invalid Appointment", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void customerIdBox_TextChanged(object sender, EventArgs e)
+        {
+            string errorMessage;
+            string errorMessages = "";
+            bool isAppointmentSelected = appointmentGridView.SelectedRows.Count > 0;
+            bool isCustomerIdEntered = !string.IsNullOrWhiteSpace(customerIdBox.Text);
+
+            if (!isAppointmentSelected && isCustomerIdEntered)
+            {
+                if(!Validation.ValidateInteger(customerIdBox.Text, out int value, out errorMessage))
+                {
+                    errorMessages += "Customer ID: " + errorMessage + "\n";
+                    MessageBox.Show(errorMessages, "Not An ID Number", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    customerIdBox.Clear();
+                }
+                else
+                {
+                    if (!Validation.ValidateCustomerId(value, CustomerManager.AllCustomers, out string customerName, out errorMessage))
+                    {
+                        customerTextBox.Clear();
+                        MessageBox.Show("Customer ID: " + errorMessage, "Invalid Customer ID", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        customerTextBox.Text = customerName;
+                    }
+                }
             }
         }
     }
