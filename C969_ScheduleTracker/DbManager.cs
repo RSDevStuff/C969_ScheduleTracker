@@ -9,39 +9,6 @@ public static class DbManager
     private static readonly string ConnectionString =
         "server=localhost;user=sqlUser;database=client_schedule;port=3306;password=Passw0rd!";
 
-    // We need to return a List of Dictionaries, or a List of custom objects
-    //public static List<Dictionary<string, object>> ExecuteQueryToList(MySqlCommand cmd)
-    //{
-    //    var resultList = new List<Dictionary<string, object>>();
-    //    using (MySqlConnection connection = new MySqlConnection(ConnectionString))
-    //    {
-    //        try
-    //        {
-    //            connection.Open();
-    //            cmd.Connection = connection;
-
-    //            using (MySqlDataReader reader = cmd.ExecuteReader())
-    //            {
-    //                while (reader.Read())
-    //                {
-    //                    var row = new Dictionary<string, object>();
-    //                    for (int i = 0; i < reader.FieldCount; i++)
-    //                    {
-    //                        row[reader.GetName(i)] = reader.GetValue(i);
-    //                    }
-    //                    resultList.Add(row);
-    //                }
-    //            }
-    //        }
-    //        catch (MySqlException e)
-    //        {
-    //            MessageBox.Show($"Error: {e.Message}");
-    //        }
-
-    //        return resultList;
-    //    }
-    //}
-
     //Custom object implementation
     //Requires an empty constructor for each custom object
     public static BindingList<T> ExecuteQueryToBindingList<T>(MySqlCommand cmd) where T : new()
@@ -84,23 +51,24 @@ public static class DbManager
         }
     }
 
-    public static int ExecuteModification(string query)
+    public static int ExecuteModification(MySqlCommand cmd)
     {
         using (MySqlConnection connection = new MySqlConnection(ConnectionString))
         {
-            try
-            {
+            //try
+            //{
                 connection.Open();
-                using (MySqlCommand cmd = new MySqlCommand(query, connection))
+                cmd.Connection = connection;
+                using (cmd)
                 {
                     return cmd.ExecuteNonQuery();
                 }
-            }
-            catch (MySqlException e)
-            {
-                Console.WriteLine($"Error: {e.Message}");
-                return -1;
-            }
+            //}
+            //catch (MySqlException e)
+            //{
+            //    MessageBox.Show($"Error: {e.Message}");
+            //    return -1;
+            //}
         }
     }
 
@@ -121,7 +89,8 @@ public static class DbManager
                        "app.end AS End, " +
                        "app.type as Type, " +
                        "app.userId as UserId, " +
-                       "app.customerId as CustomerId " +
+                       "app.customerId as CustomerId," +
+                       "app.appointmentId as AppointmentId " +
                        "FROM appointment AS app " +
                        "LEFT JOIN customer AS cust ON app.customerId = cust.customerId " +
                        "ORDER BY app.start DESC";
@@ -156,9 +125,31 @@ public static class DbManager
         return cmd;
     }
 
-    public static MySqlCommand InsertNewAppointmentCommand()
+    public static MySqlCommand InsertNewAppointmentCommand(int custId, int userId, string type, DateTime start, DateTime end, string userName)
     {
-        MySqlCommand cmd = new MySqlCommand();
+        string notNeeded = "not needed";
+        DateTime currentDate = DateTime.Now;
+        string insertStatement =
+            "INSERT INTO appointment(customerId, userId, title, description, location, contact, type, url, start, end, createDate, createdBy, lastUpdate, lastUpdateBy)VALUES" +
+            "(@customerId,@userId, @notNeeded, @notNeeded, @notNeeded, @notNeeded, @type, @notNeeded, @startTime,@endTime,@createDate,@userName,@createDate,@userName)";
+        MySqlCommand cmd = new MySqlCommand(insertStatement);
+        cmd.Parameters.AddWithValue("@customerId", custId);
+        cmd.Parameters.AddWithValue("@userId", userId);
+        cmd.Parameters.AddWithValue("@notNeeded", notNeeded);
+        cmd.Parameters.AddWithValue("@type", type);
+        cmd.Parameters.AddWithValue("@startTime", start);
+        cmd.Parameters.AddWithValue("@endTime", end);
+        cmd.Parameters.AddWithValue("@userName", userName);
+        cmd.Parameters.AddWithValue("@createDate", currentDate);
+        return cmd;
+    }
+
+    public static MySqlCommand RemoveExistingAppointment(string appointmentId)
+    {
+        string removeStatement =
+            "DELETE FROM appointment WHERE appointmentId = @appointmentId";
+        MySqlCommand cmd = new MySqlCommand(removeStatement);
+        cmd.Parameters.AddWithValue("@appointmentId", appointmentId);
         return cmd;
     }
 }

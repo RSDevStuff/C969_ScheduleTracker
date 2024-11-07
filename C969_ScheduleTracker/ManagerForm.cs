@@ -14,12 +14,14 @@ namespace C969_ScheduleTracker
 {
     public partial class ManagerForm : Form
     {
-        private int _userId;
-        private int _customerId;
+        private readonly int _userId;
+        private readonly string _userName;
 
-        public ManagerForm(int userId)
+        public ManagerForm(int userId, string userName)
         {
             _userId = userId;
+            _userName = userName;
+
             var appointmentQuery = new MySqlCommand();
             var customerQuery = new MySqlCommand();
 
@@ -40,7 +42,7 @@ namespace C969_ScheduleTracker
             var appointmentList = DbManager.ExecuteQueryToBindingList<Appointment>(appointmentQuery);
 
             // Debug print out to reflect current rows and date
-            MessageBox.Show("Appointment List Count: " + appointmentList.Count().ToString() + "\n" + "Customer List Count: " + customerList.Count().ToString());
+            //MessageBox.Show("Appointment List Count: " + appointmentList.Count().ToString() + "\n" + "Customer List Count: " + customerList.Count().ToString());
 
             // Populate DataGridViews
             AppointmentManager.LoadAppointmentsFromDb(appointmentList);
@@ -53,12 +55,15 @@ namespace C969_ScheduleTracker
             appointmentGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             appointmentGridView.Columns["UserId"].Visible = false;
             appointmentGridView.Columns["CustomerId"].Visible = false;
+            appointmentGridView.Columns["AppointmentId"].Visible = false;
             appointmentGridView.Columns["Date"].DefaultCellStyle.Format = "MM/dd/yyyy";
-            appointmentGridView.Columns["Start"].DefaultCellStyle.Format = "HH:mm";
-            appointmentGridView.Columns["End"].DefaultCellStyle.Format = "HH:mm";
+            appointmentGridView.Columns["Start"].DefaultCellStyle.Format = "hh:mm tt";
+            appointmentGridView.Columns["End"].DefaultCellStyle.Format = "hh:mm tt";
             appointmentGridView.RowHeadersVisible = false;
             appointmentGridView.AllowUserToAddRows = false;
             appointmentGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            appointmentGridView.CellFormatting += appointmentGridView_CellFormatting;
+                ;
 
             // Customer GridView Appearance and Behavior
             customerGridView.Columns["CustomerId"].Visible = false;
@@ -67,8 +72,11 @@ namespace C969_ScheduleTracker
             customerGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             customerGridView.AllowUserToAddRows = false;
             customerGridView.SelectionChanged += customerGridView_SelectionChanged;
-        }
+            
 
+            appointmentGridView.ClearSelection();
+            customerGridView.ClearSelection();
+        }
         // Logic for DateRange ComboBox
         private void dateRangeBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -115,9 +123,9 @@ namespace C969_ScheduleTracker
                 if (selectedRow != null)
                 {
                     Validation.ValidateInteger(selectedRow.Cells["customerId"].Value.ToString(), out int _customerId, out var message);
-                    dateTimePicker.Value = Convert.ToDateTime(selectedRow.Cells["Date"].Value);
-                    startTimePicker.Value = Convert.ToDateTime(selectedRow.Cells["Start"].Value);
-                    endTimePicker.Value = Convert.ToDateTime(selectedRow.Cells["End"].Value);
+                    dateTimePicker.Value = Convert.ToDateTime(selectedRow.Cells["Date"].Value).ToLocalTime();
+                    startTimePicker.Value = Convert.ToDateTime(selectedRow.Cells["Start"].Value).ToLocalTime();
+                    endTimePicker.Value = Convert.ToDateTime(selectedRow.Cells["End"].Value).ToLocalTime();
                     customerIdBox.Text = selectedRow.Cells["CustomerId"].Value?.ToString() ?? "";
                     customerIdBox.Enabled = false;
                     customerTextBox.Text = selectedRow.Cells["Customer"].Value?.ToString() ?? "";
@@ -148,9 +156,9 @@ namespace C969_ScheduleTracker
         private void clearButton_Click(object sender, EventArgs e)
         {
             appointmentGridView.ClearSelection();
-            dateTimePicker.Value = DateTime.Now;
-            startTimePicker.Value = DateTime.Now;
-            endTimePicker.Value = DateTime.Now.AddHours(1);
+            dateTimePicker.Value = DateTime.Now.ToLocalTime();
+            startTimePicker.Value = DateTime.Now.ToLocalTime();
+            endTimePicker.Value = DateTime.Now.AddHours(1).ToLocalTime();
             customerTextBox.Clear();
             customerTextBox.Enabled = false;
             customerIdBox.Clear();
@@ -205,7 +213,6 @@ namespace C969_ScheduleTracker
             string errorMessages = "";
             DateTime startDateTime;
             DateTime endDateTime;
-            string customerName;
             string selectedType = "";
             int customerId;
             bool validForm = true;
@@ -215,12 +222,12 @@ namespace C969_ScheduleTracker
 
             // Pulling out the parts we want from the DateTimePickers
             DateTime selectedDate = dateTimePicker.Value.Date;
-            TimeSpan selectedStartTime = startTimePicker.Value.TimeOfDay;
-            TimeSpan selectedEndTime = endTimePicker.Value.TimeOfDay;
+            TimeSpan selectedStartTime = new TimeSpan(startTimePicker.Value.Hour, startTimePicker.Value.Minute, 0);
+            TimeSpan selectedEndTime = new TimeSpan(endTimePicker.Value.Hour, endTimePicker.Value.Minute, 0);
 
             //Combining into legible DateTimes
-            startDateTime = selectedDate.Add(selectedStartTime);
-            endDateTime = selectedDate.Add(selectedEndTime);
+            startDateTime = selectedDate.Add(selectedStartTime).ToUniversalTime();
+            endDateTime = selectedDate.Add(selectedEndTime).ToUniversalTime();
 
             // Validate Appointment Date
             if (!Validation.ValidateDateTime(startDateTime, out errorMessage))
@@ -251,24 +258,43 @@ namespace C969_ScheduleTracker
             }
             else
             {
-                if (!Validation.ValidateCustomerId(customerId, CustomerManager.AllCustomers, out customerName, out errorMessage)) 
+                string customerName;
+                if (!Validation.ValidateCustomerId(customerId, CustomerManager.AllCustomers, out customerName, out errorMessage))
                 {
                     errorMessages += errorMessage + "\n";
                     validForm = false;
                 }
                 else
-                { 
+                {
                     newAppointment.Customer = customerName;
                     newAppointment.CustomerId = customerId;
                 }
             }
 
+            // Grab type enum from combo box
             selectedType = Enum.GetName(typeof(AppointmentType), typeComboBox.SelectedIndex);
             newAppointment.Type = selectedType;
             newAppointment.UserId = _userId;
 
             if (validForm)
             {
+                MySqlCommand insertStatement = DbManager.InsertNewAppointmentCommand(newAppointment.CustomerId,
+                    newAppointment.UserId, newAppointment.Type, newAppointment.Start, newAppointment.End, _userName);
+
+                try
+                {
+                    int code = DbManager.ExecuteModification(insertStatement);
+                    var appointmentQuery = DbManager.GetAppointmentAll();
+                    var appointmentList = DbManager.ExecuteQueryToBindingList<Appointment>(appointmentQuery);
+                    AppointmentManager.LoadAppointmentsFromDb(appointmentList);
+                    appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserId(_userId);
+                    appointmentGridView.ClearSelection();
+                    customerGridView.ClearSelection();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("ERROR:" + ex);
+                }
                 MessageBox.Show(newAppointment.ToString());
             }
             else
@@ -286,7 +312,7 @@ namespace C969_ScheduleTracker
 
             if (!isAppointmentSelected && isCustomerIdEntered)
             {
-                if(!Validation.ValidateInteger(customerIdBox.Text, out int value, out errorMessage))
+                if (!Validation.ValidateInteger(customerIdBox.Text, out int value, out errorMessage))
                 {
                     errorMessages += "Customer ID: " + errorMessage + "\n";
                     MessageBox.Show(errorMessages, "Not An ID Number", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -305,6 +331,59 @@ namespace C969_ScheduleTracker
                     }
                 }
             }
+        }
+
+        private void removeAppointmentButton_Click(object sender, EventArgs e)
+        {
+            if (appointmentGridView.SelectedRows.Count > 0)
+            {
+                var selectedRow = appointmentGridView.SelectedRows[0];
+                if (selectedRow != null)
+                {
+                    string appointmentId = selectedRow.Cells["AppointmentId"].Value.ToString();
+                    MySqlCommand removeStatement = DbManager.RemoveExistingAppointment(appointmentId);
+
+                    DialogResult result =
+                        MessageBox.Show($"Are you sure you want to delete this appointment?",
+                            "Confirm Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    if (result == DialogResult.Yes)
+                    {
+                        try
+                        {
+                            int code = DbManager.ExecuteModification(removeStatement);
+                            var appointmentQuery = DbManager.GetAppointmentAll();
+                            var appointmentList = DbManager.ExecuteQueryToBindingList<Appointment>(appointmentQuery);
+                            AppointmentManager.LoadAppointmentsFromDb(appointmentList);
+                            appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserId(_userId);
+                            appointmentGridView.ClearSelection();
+                            customerGridView.ClearSelection();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("ERROR:" + ex);
+                        }
+                    }
+
+                }
+            }
+        }
+
+        // Lets convert from UTC to Local
+        private void appointmentGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            // Check current column
+            if (appointmentGridView.Columns[e.ColumnIndex].Name == "Start" ||
+                appointmentGridView.Columns[e.ColumnIndex].Name == "End")
+            {
+                if (e.Value != null && e.Value is DateTime utcDateTime)
+                {
+                    DateTime localDateTime = utcDateTime.ToLocalTime();
+
+                    e.Value = localDateTime.ToString("hh:mm tt");
+                    e.FormattingApplied = true;
+                }
+            }
+            
         }
     }
 }

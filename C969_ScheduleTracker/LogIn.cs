@@ -3,6 +3,7 @@ namespace C969_ScheduleTracker
     public partial class LogIn : Form
     {
         public int UserID {get; set; }
+        public string UserName {get; set; }
         private LocalizationManager _localizationManager;
         public LogIn()
         {
@@ -26,10 +27,11 @@ namespace C969_ScheduleTracker
 
                 if (result.Count > 0 && password == result[0].Password.ToString())
                 {
-                    logger.logSuccess(username, DateTime.Now);
+                    logger.logSuccess(username, DateTime.Now.ToUniversalTime());
 
                     // Grab the user ID to bring it to the Manager Form
                     UserID = result[0].UserId;
+                    UserName = result[0].Username;
 
                     DialogResult = DialogResult.OK;
                     Close();
@@ -52,7 +54,7 @@ namespace C969_ScheduleTracker
                             break;
                     }
                     MessageBox.Show(errorMessage, errorLabel, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    logger.logFailure(username, DateTime.Now);
+                    logger.logFailure(username, DateTime.Now.ToUniversalTime());
                     userPwTextBox.Clear();
                     userNameTextBox.Select();
                 }

@@ -212,6 +212,7 @@
             removeAppointmentButton.TabIndex = 27;
             removeAppointmentButton.Text = "Remove";
             removeAppointmentButton.UseVisualStyleBackColor = true;
+            removeAppointmentButton.Click += removeAppointmentButton_Click;
             // 
             // addAppointmentButton
             // 
@@ -254,6 +255,7 @@
             appointmentGridView.ReadOnly = true;
             appointmentGridView.Size = new Size(545, 244);
             appointmentGridView.TabIndex = 11;
+            appointmentGridView.CellFormatting += appointmentGridView_CellFormatting;
             appointmentGridView.SelectionChanged += appointmentGridView_SelectionChanged;
             // 
             // typeComboBox

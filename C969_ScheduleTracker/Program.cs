@@ -15,8 +15,9 @@ namespace C969_ScheduleTracker
             if (loginForm.ShowDialog() == DialogResult.OK) // Only continue if login is successful
             {
                 int userId = loginForm.UserID;
+                string userName = loginForm.UserName;
                 // Run the main ManagerForm after a successful login
-                Application.Run(new ManagerForm(userId));
+                Application.Run(new ManagerForm(userId, userName));
             }
         }
     }
