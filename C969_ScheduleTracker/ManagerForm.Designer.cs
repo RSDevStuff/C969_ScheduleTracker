@@ -203,6 +203,7 @@
             updateAppointmentButton.TabIndex = 28;
             updateAppointmentButton.Text = "Update";
             updateAppointmentButton.UseVisualStyleBackColor = true;
+            updateAppointmentButton.Click += updateAppointmentButton_Click;
             // 
             // removeAppointmentButton
             // 

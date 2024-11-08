@@ -24,28 +24,32 @@ public static class Validation
     }
 
     // Validate appointment times, to make sure there's no clash within a list of existing appointments
-    public static bool ValidateAppointmentTime(DateTime start, DateTime end, BindingList<Appointment> appointments, out string errorMessage)
+    public static bool ValidateAppointmentTime(DateTime start, DateTime end, BindingList<Appointment> appointments, out string errorMessage, string appointmentId)
     {
         foreach (var appointment in appointments)
         {
             DateTime existingStartTime = appointment.Start;
             DateTime existingEndTime = appointment.End;
+            if (appointment.AppointmentId.ToString() == appointmentId)
+            {
+                continue;
+            }
 
             if (start >= existingStartTime && start < existingEndTime)
             {
-                errorMessage = $"Cannot schedule appointment between {existingStartTime.ToLocalTime()}-{existingEndTime.ToLocalTime()}";
+                errorMessage = $"Spot Taken! Cannot schedule appointment between {existingStartTime.ToLocalTime()}-{existingEndTime.ToLocalTime()}";
                 return true;
             }
 
             if (end > existingStartTime && end <= existingEndTime)
             {
-                errorMessage = $"Cannot schedule appointment between {existingStartTime.ToLocalTime()}-{existingEndTime.ToLocalTime()}";
+                errorMessage = $"Spot Taken! Cannot schedule appointment between {existingStartTime.ToLocalTime()}-{existingEndTime.ToLocalTime()}";
                 return true;
             }
 
             if (start < existingStartTime && end > existingEndTime)
             {
-                errorMessage = $"Cannot schedule appointment between {existingStartTime.ToLocalTime()}-{existingEndTime.ToLocalTime()}";
+                errorMessage = $"Spot Taken! Cannot schedule appointment between {existingStartTime.ToLocalTime()}-{existingEndTime.ToLocalTime()}";
                 return true;
             }
         }

@@ -63,7 +63,7 @@ namespace C969_ScheduleTracker
             appointmentGridView.AllowUserToAddRows = false;
             appointmentGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             appointmentGridView.CellFormatting += appointmentGridView_CellFormatting;
-                ;
+            ;
 
             // Customer GridView Appearance and Behavior
             customerGridView.Columns["CustomerId"].Visible = false;
@@ -72,7 +72,7 @@ namespace C969_ScheduleTracker
             customerGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             customerGridView.AllowUserToAddRows = false;
             customerGridView.SelectionChanged += customerGridView_SelectionChanged;
-            
+
 
             appointmentGridView.ClearSelection();
             customerGridView.ClearSelection();
@@ -238,7 +238,7 @@ namespace C969_ScheduleTracker
             else
             {
                 if (Validation.ValidateAppointmentTime(startDateTime, endDateTime, AppointmentManager.AllAppointments,
-                        out errorMessage))
+                        out errorMessage, "-1"))
                 {
                     errorMessages += errorMessage + "\n";
                     validForm = false;
@@ -295,7 +295,6 @@ namespace C969_ScheduleTracker
                 {
                     MessageBox.Show("ERROR:" + ex);
                 }
-                MessageBox.Show(newAppointment.ToString());
             }
             else
             {
@@ -383,7 +382,118 @@ namespace C969_ScheduleTracker
                     e.FormattingApplied = true;
                 }
             }
-            
+
+        }
+
+        private void updateAppointmentButton_Click(object sender, EventArgs e)
+        {
+            if (appointmentGridView.SelectedRows.Count > 0)
+            {
+                var selectedRow = appointmentGridView.SelectedRows[0];
+                if (selectedRow != null)
+                {
+                    string appointmentId = selectedRow.Cells["AppointmentId"].Value.ToString();
+                    string errorMessage;
+                    string errorMessages = "";
+                    DateTime startDateTime;
+                    DateTime endDateTime;
+                    string selectedType = "";
+                    int customerId;
+                    bool validForm = true;
+
+                    // Creating a new appointment object
+                    Appointment newAppointment = new Appointment();
+
+                    // Pulling out the parts we want from the DateTimePickers
+                    DateTime selectedDate = dateTimePicker.Value.Date;
+                    TimeSpan selectedStartTime = new TimeSpan(startTimePicker.Value.Hour, startTimePicker.Value.Minute, 0);
+                    TimeSpan selectedEndTime = new TimeSpan(endTimePicker.Value.Hour, endTimePicker.Value.Minute, 0);
+
+                    //Combining into legible DateTimes
+                    startDateTime = selectedDate.Add(selectedStartTime).ToUniversalTime();
+                    endDateTime = selectedDate.Add(selectedEndTime).ToUniversalTime();
+
+                    // Validate Appointment Date
+                    if (!Validation.ValidateDateTime(startDateTime, out errorMessage))
+                    {
+                        errorMessages += errorMessage + "\n";
+                        validForm = false;
+                    }
+                    else
+                    {
+                        if (Validation.ValidateAppointmentTime(startDateTime, endDateTime, AppointmentManager.AllAppointments,
+                                out errorMessage, appointmentId))
+                        {
+                            errorMessages += errorMessage + "\n";
+                            validForm = false;
+                        }
+                        else
+                        {
+                            newAppointment.Start = startDateTime;
+                            newAppointment.End = endDateTime;
+                        }
+                    }
+
+                    //Validate customer ID exists and is good
+                    if (!Validation.ValidateInteger(customerIdBox.Text, out customerId, out errorMessage))
+                    {
+                        errorMessages += errorMessage;
+                        validForm = false;
+                    }
+                    else
+                    {
+                        string customerName;
+                        if (!Validation.ValidateCustomerId(customerId, CustomerManager.AllCustomers, out customerName, out errorMessage))
+                        {
+                            errorMessages += errorMessage + "\n";
+                            validForm = false;
+                        }
+                        else
+                        {
+                            newAppointment.Customer = customerName;
+                            newAppointment.CustomerId = customerId;
+                        }
+                    }
+
+                    // Grab type enum from combo box
+                    selectedType = Enum.GetName(typeof(AppointmentType), typeComboBox.SelectedIndex);
+                    newAppointment.Type = selectedType;
+                    newAppointment.UserId = _userId;
+
+                    if (validForm)
+                    {
+                        MySqlCommand updateStatement = DbManager.ModifyExistingAppointment(newAppointment.CustomerId,
+                            newAppointment.Type, newAppointment.Start, newAppointment.End, _userName, appointmentId);
+
+                        DialogResult result =
+                            MessageBox.Show($"Are you sure you want to modify this appointment?",
+                                "Confirm Modification", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                        if (result == DialogResult.Yes)
+                        {
+                            try
+                            {
+                                int code = DbManager.ExecuteModification(updateStatement);
+                                var appointmentQuery = DbManager.GetAppointmentAll();
+                                var appointmentList = DbManager.ExecuteQueryToBindingList<Appointment>(appointmentQuery);
+                                AppointmentManager.LoadAppointmentsFromDb(appointmentList);
+                                appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserId(_userId);
+                                appointmentGridView.ClearSelection();
+                                customerGridView.ClearSelection();
+                            }
+
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("ERROR:" + ex);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show(errorMessages, "Invalid Appointment", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+
+            }
         }
     }
 }

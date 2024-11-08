@@ -16,8 +16,8 @@ public static class DbManager
         var resultList = new BindingList<T>();
         using (MySqlConnection connection = new MySqlConnection(ConnectionString))
         {
-            //try
-            //{
+            try
+            {
                 connection.Open();
                 cmd.Connection = connection;
 
@@ -39,13 +39,13 @@ public static class DbManager
                             }
                         }
                         resultList.Add(item);
+                    }
                 }
-                //}
             }
-            //catch (MySqlException e)
-           // {
-            //    MessageBox.Show($"Error: {e.Message}");
-            //}
+            catch (MySqlException e)
+            {
+                MessageBox.Show($"Error: {e.Message}");
+            }
 
             return resultList;
         }
@@ -55,20 +55,20 @@ public static class DbManager
     {
         using (MySqlConnection connection = new MySqlConnection(ConnectionString))
         {
-            //try
-            //{
+            try
+            {
                 connection.Open();
                 cmd.Connection = connection;
                 using (cmd)
                 {
                     return cmd.ExecuteNonQuery();
                 }
-            //}
-            //catch (MySqlException e)
-            //{
-            //    MessageBox.Show($"Error: {e.Message}");
-            //    return -1;
-            //}
+            }
+            catch (MySqlException e)
+            {
+                MessageBox.Show($"Error: {e.Message}");
+                return -1;
+            }
         }
     }
 
@@ -118,13 +118,6 @@ public static class DbManager
         return cmd;
     }
 
-    public static MySqlCommand GetMaxId()
-    {
-        //implementation
-        MySqlCommand cmd = new MySqlCommand();
-        return cmd;
-    }
-
     public static MySqlCommand InsertNewAppointmentCommand(int custId, int userId, string type, DateTime start, DateTime end, string userName)
     {
         string notNeeded = "not needed";
@@ -149,6 +142,30 @@ public static class DbManager
         string removeStatement =
             "DELETE FROM appointment WHERE appointmentId = @appointmentId";
         MySqlCommand cmd = new MySqlCommand(removeStatement);
+        cmd.Parameters.AddWithValue("@appointmentId", appointmentId);
+        return cmd;
+    }
+
+    public static MySqlCommand ModifyExistingAppointment(int custId, string type, DateTime start, DateTime end, string userName, string appointmentId)
+    {
+        DateTime currentDate = DateTime.Now;
+        string updateStatement =
+            "UPDATE appointment SET " +
+            "customerId = @customerId, " +
+            "type = @type, " +
+            "start = @start, " +
+            "end = @end, " +
+            "lastUpdate = @currentDate, " +
+            "lastUpdateBy = @currentUser " +
+            "WHERE appointmentId = @appointmentId";
+
+        MySqlCommand cmd = new MySqlCommand(updateStatement);
+        cmd.Parameters.AddWithValue("@customerId", custId);
+        cmd.Parameters.AddWithValue("@type", type);
+        cmd.Parameters.AddWithValue("@start", start.ToUniversalTime());
+        cmd.Parameters.AddWithValue("@end", end.ToUniversalTime());
+        cmd.Parameters.AddWithValue("@currentDate", currentDate.ToUniversalTime());
+        cmd.Parameters.AddWithValue("@currentUser", userName);
         cmd.Parameters.AddWithValue("@appointmentId", appointmentId);
         return cmd;
     }
