@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using MySql.Data.MySqlClient;
 using Mysqlx.Resultset;
+using Org.BouncyCastle.Asn1.Mozilla;
 
 namespace C969_ScheduleTracker;
 
@@ -72,6 +73,27 @@ public static class DbManager
         }
     }
 
+    public static int ExecuteModificationReturnId(MySqlCommand cmd)
+    {
+        using (MySqlConnection connection = new MySqlConnection(ConnectionString))
+        {
+            //try
+            //{
+                connection.Open();
+                cmd.Connection = connection;
+                using (cmd)
+                {
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                }
+            //}
+            //catch (MySqlException e)
+            //{
+            //    MessageBox.Show($"Error: {e.Message}");
+            //    return -1;
+            //}
+        }
+    }
+
     public static MySqlCommand GetAuthenticationString(string userName)
     {
         string query = "SELECT userId, userName, password FROM user WHERE username = @userName";
@@ -118,6 +140,21 @@ public static class DbManager
         return cmd;
     }
 
+    public static MySqlCommand GetAddressAll()
+    {
+        string query = "select addressId as AddressId," +
+                       "address as AddressName, " +
+                       "city.cityId as CityId, " +
+                       "city.city as City, " +
+                       "country.countryId as CountryId," +
+                       "country.country as Country FROM address " +
+                       "LEFT JOIN city on city.cityId = address.cityId " +
+                       "LEFT JOIN country on country.countryId = city.countryId";
+
+        MySqlCommand cmd = new MySqlCommand(query);
+        return cmd;
+    }
+
     public static MySqlCommand InsertNewAppointmentCommand(int custId, int userId, string type, DateTime start, DateTime end, string userName)
     {
         string notNeeded = "not needed";
@@ -148,7 +185,7 @@ public static class DbManager
 
     public static MySqlCommand ModifyExistingAppointment(int custId, string type, DateTime start, DateTime end, string userName, string appointmentId)
     {
-        DateTime currentDate = DateTime.Now;
+        DateTime currentDate = DateTime.Now.ToUniversalTime();
         string updateStatement =
             "UPDATE appointment SET " +
             "customerId = @customerId, " +
@@ -169,4 +206,67 @@ public static class DbManager
         cmd.Parameters.AddWithValue("@appointmentId", appointmentId);
         return cmd;
     }
+
+    public static MySqlCommand AddNewCustomer(string customerName, int addressId, string userName)
+    {
+    
+        DateTime currentDate = DateTime.Now.ToUniversalTime();
+        string insertStatement = 
+            "INSERT INTO customer(customerName, addressId, active, createDate, createdBy, lastUpdate, lastUpdateBy) VALUES" +
+                                 "(@customerName,@addressId, 1, @currentDate, @userName, @currentDate, @userName); SELECT LAST_INSERT_ID();";
+        MySqlCommand cmd = new MySqlCommand(insertStatement);
+        cmd.Parameters.AddWithValue("@customerName", customerName);
+        cmd.Parameters.AddWithValue("@addressId", addressId);
+        cmd.Parameters.AddWithValue("@currentDate", currentDate);
+        cmd.Parameters.AddWithValue("@userName", userName);
+        return cmd;
+    }
+
+    public static MySqlCommand AddNewCountry(string countryName, string userName)
+    {
+        DateTime currentDate = DateTime.Now.ToUniversalTime();
+        string insertStatement =
+            "INSERT INTO country(country, createDate, createdBy, lastUpdate, lastUpdateBy) " +
+            "VALUES(@countryName, @currentDate, @userName, @currentDate, @userName); " +
+            "SELECT LAST_INSERT_ID();";
+        MySqlCommand cmd = new MySqlCommand(insertStatement);
+        cmd.Parameters.AddWithValue("@countryName", countryName);
+        cmd.Parameters.AddWithValue("@currentDate", currentDate);
+        cmd.Parameters.AddWithValue("@userName", userName);
+        return cmd;
+    }
+
+    public static MySqlCommand AddNewCity(string cityName, int countryId, string userName)
+    {
+        DateTime currentDate = DateTime.Now.ToUniversalTime();
+        string insertStatement =
+            "INSERT INTO city(city, countryId, createDate, createdBy, lastUpdate, lastUpdateBy) " +
+            "VALUES(@cityName, @countryId, @currentDate, @userName, @currentDate, @userName); " +
+            "SELECT LAST_INSERT_ID();";
+        MySqlCommand cmd = new MySqlCommand(insertStatement);
+        cmd.Parameters.AddWithValue("@cityName", cityName);
+        cmd.Parameters.AddWithValue("@countryId", countryId);
+        cmd.Parameters.AddWithValue("@currentDate", currentDate);
+        cmd.Parameters.AddWithValue("@userName", userName);
+        return cmd;
+    }
+
+    public static MySqlCommand AddNewAddress(string addressName, int cityId, string phone, string userName)
+    {
+        DateTime currentDate = DateTime.Now.ToUniversalTime();
+
+        string insertStatement =
+            "INSERT INTO address(address, address2, cityId, postalCode, phone, createDate, " +
+            "createdBy, lastUpdate, lastUpdateBy) " +
+            "VALUES(@addressName, ' ', @cityId, ' ', @phone, @currentDate, @userName, @currentDate, @userName); " +
+            "SELECT LAST_INSERT_ID();";
+        MySqlCommand cmd = new MySqlCommand(insertStatement);
+        cmd.Parameters.AddWithValue("@addressName", addressName);
+        cmd.Parameters.AddWithValue("@cityId", cityId);
+        cmd.Parameters.AddWithValue("@phone", phone);
+        cmd.Parameters.AddWithValue("@currentDate", currentDate);
+        cmd.Parameters.AddWithValue("@userName", userName);
+        return cmd;
+    }
+
 }

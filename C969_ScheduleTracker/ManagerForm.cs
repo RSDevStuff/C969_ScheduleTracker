@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Crypto.IO;
 
 namespace C969_ScheduleTracker
 {
@@ -24,6 +25,7 @@ namespace C969_ScheduleTracker
 
             var appointmentQuery = new MySqlCommand();
             var customerQuery = new MySqlCommand();
+            var addressQuery = new MySqlCommand();
 
             InitializeComponent();
 
@@ -37,16 +39,20 @@ namespace C969_ScheduleTracker
 
             appointmentQuery = DbManager.GetAppointmentAll();
             customerQuery = DbManager.GetCustomerAll();
+            addressQuery = DbManager.GetAddressAll();
 
             var customerList = DbManager.ExecuteQueryToBindingList<Customer>(customerQuery);
             var appointmentList = DbManager.ExecuteQueryToBindingList<Appointment>(appointmentQuery);
+            var addressList = DbManager.ExecuteQueryToBindingList<FullAddress>(addressQuery);
 
+            
             // Debug print out to reflect current rows and date
             //MessageBox.Show("Appointment List Count: " + appointmentList.Count().ToString() + "\n" + "Customer List Count: " + customerList.Count().ToString());
 
             // Populate DataGridViews
             AppointmentManager.LoadAppointmentsFromDb(appointmentList);
             CustomerManager.LoadCustomersFromDb(customerList);
+            CustomerManager.LoadAddressesFromDb(addressList);
 
             appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserId(_userId);
             customerGridView.DataSource = CustomerManager.AllCustomers;
@@ -130,6 +136,7 @@ namespace C969_ScheduleTracker
                     customerIdBox.Enabled = false;
                     customerTextBox.Text = selectedRow.Cells["Customer"].Value?.ToString() ?? "";
                     addAppointmentButton.Enabled = false;
+                    customerTextBox.Enabled = false;
                     removeAppointmentButton.Enabled = true;
                     updateAppointmentButton.Enabled = true;
                     if (Enum.TryParse(typeof(AppointmentType), selectedRow.Cells["Type"].Value?.ToString(), out var appointmentType))
@@ -494,6 +501,125 @@ namespace C969_ScheduleTracker
                 }
 
             }
+        }
+
+        private void addCustomerButton_Click(object sender, EventArgs e)
+        {
+            bool validForm = true;
+            string errorMessage;
+            string errorMessages = "";
+
+            // Blank Slate
+            Customer newCustomer = new Customer();
+
+            //Validate Customer Name
+            foreach (var control in customersTab.Controls)
+            {
+                if (control is TextBox textBox)
+                {
+                    if (textBox.Name == "idBox" || textBox.Name == "searchTextBox")
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        string value = textBox.Text;
+                        if (!Validation.ValidateString(value, out errorMessage))
+                        {
+                            errorMessages += errorMessage;
+                            validForm = false;
+                        }
+                    }
+                }
+            }
+            if (validForm)
+            {
+                newCustomer.Name = nameTextBox.Text;
+                newCustomer.Address = addressTextBox.Text;
+                newCustomer.City = cityTextBox.Text;
+                newCustomer.Country = countryTextBox.Text;
+                newCustomer.Phone = phoneTextBox.Text;
+                
+                // Grabs addressId, cityId, countryId
+                int addressId = 0;
+                int cityId = 0;
+                int countryId = 0;
+                bool isFound = false;
+                
+                foreach (var address in CustomerManager.AllAddresses)
+                {
+                    if (address.Country == newCustomer.Country.Trim())
+                    {
+                        countryId = address.CountryId;
+                        if (address.City == newCustomer.City.Trim())
+                        {
+                            cityId = address.CityId;
+                            if (address.AddressName == newCustomer.Address.Trim())
+                            {
+                                MessageBox.Show(address.AddressId.ToString());
+                                addressId = address.AddressId;
+                                isFound = true;
+                                break;
+
+                            }
+                            else
+                            {
+                                // create new addressId using found city and country combination
+                                var mod = DbManager.AddNewAddress(newCustomer.Address, cityId,  newCustomer.Phone, _userName);
+                                addressId = DbManager.ExecuteModificationReturnId(mod);
+                                MessageBox.Show("New Address ID: " + addressId.ToString());
+                                isFound = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            // create new city Id within the existing country
+                            var mod = DbManager.AddNewCity(newCustomer.City, countryId, _userName);
+                            cityId = DbManager.ExecuteModificationReturnId(mod);
+                            
+
+                            // create new Address using the created city
+                            mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone, _userName);
+                            addressId = DbManager.ExecuteModificationReturnId(mod);
+                            MessageBox.Show("New City ID: " + cityId.ToString() + "\n" + "New Address ID: " + addressId.ToString());
+                            isFound = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!isFound)
+                {
+                    // Create new country ID
+                    var mod = DbManager.AddNewCountry(newCustomer.Country, _userName);
+                    countryId = DbManager.ExecuteModificationReturnId(mod);
+
+                    // ...new cityId
+                    mod = DbManager.AddNewCity(newCustomer.City, countryId, _userName);
+                    cityId = DbManager.ExecuteModificationReturnId(mod);
+
+                    // ...and new address Id.
+                    mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone, _userName);
+                    addressId = DbManager.ExecuteModificationReturnId(mod);
+                    MessageBox.Show("New Country ID: " + countryId.ToString() + "\n" + "New City ID: " + cityId.ToString() + "\n" + "New Address ID: " + addressId.ToString());
+
+                }
+
+                var customerInsert = DbManager.AddNewCustomer(newCustomer.Name, addressId, _userName);
+                var newCustomerId = DbManager.ExecuteModificationReturnId(customerInsert);
+                MessageBox.Show($"New customer created with ID: {newCustomerId}");
+                var customerQuery = DbManager.GetCustomerAll();
+                var customerList = DbManager.ExecuteQueryToBindingList<Customer>(customerQuery);
+                CustomerManager.LoadCustomersFromDb(customerList);
+                customerGridView.DataSource = customerList;
+
+            }
+            else
+            {
+                MessageBox.Show(errorMessages, "Invalid Form", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+
         }
     }
 }

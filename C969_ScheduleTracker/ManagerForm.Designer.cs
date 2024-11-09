@@ -435,6 +435,7 @@
             addCustomerButton.TabIndex = 38;
             addCustomerButton.Text = "Add";
             addCustomerButton.UseVisualStyleBackColor = true;
+            addCustomerButton.Click += addCustomerButton_Click;
             // 
             // searchLabel
             // 
