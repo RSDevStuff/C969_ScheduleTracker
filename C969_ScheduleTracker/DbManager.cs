@@ -2,6 +2,7 @@
 using MySql.Data.MySqlClient;
 using Mysqlx.Resultset;
 using Org.BouncyCastle.Asn1.Mozilla;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace C969_ScheduleTracker;
 
@@ -144,6 +145,7 @@ public static class DbManager
     {
         string query = "select addressId as AddressId," +
                        "address as AddressName, " +
+                       "phone as Phone, " +
                        "city.cityId as CityId, " +
                        "city.city as City, " +
                        "country.countryId as CountryId," +
@@ -275,6 +277,46 @@ public static class DbManager
             "DELETE FROM customer WHERE customerId = @customerId;";
         MySqlCommand cmd = new MySqlCommand(removeStatement);
         cmd.Parameters.AddWithValue("@customerId", customerId);
+        return cmd;
+    }
+
+    public static MySqlCommand UpdateExistingAddress(int addressId, string addressName, int cityId, string phone, string userName)
+    {
+        DateTime currentDate = DateTime.Now.ToUniversalTime();
+        string updateStatement =
+            "UPDATE address " +
+            "SET address = @addressName, " +
+            "cityId = @cityId, " +
+            "phone = @phone, " +
+            "lastUpdate = @currentDate, " +
+            "lastUpdateBy = @currentUser " +
+            "WHERE addressId = @addressId;";
+        MySqlCommand cmd = new MySqlCommand(updateStatement);
+        cmd.Parameters.AddWithValue("@addressName", addressName);
+        cmd.Parameters.AddWithValue("@cityId", cityId);
+        cmd.Parameters.AddWithValue("@phone", phone);
+        cmd.Parameters.AddWithValue("@currentDate", currentDate);
+        cmd.Parameters.AddWithValue("@currentUser", userName);
+        cmd.Parameters.AddWithValue("@addressId", addressId);
+        return cmd;
+    }
+
+    public static MySqlCommand UpdateExistingCustomer(string customerId, string customerName, int addressId, string userName)
+    {
+        DateTime currentDate = DateTime.Now.ToUniversalTime();
+        string updateStatement =
+            "UPDATE customer " +
+            "SET addressId = @addressId, " +
+            "customerName = @customerName, " +
+            "lastUpdate = @currentDate, " +
+            "lastUpdateBy = @currentUser " +
+            "WHERE customerId = @customerId;";
+        MySqlCommand cmd = new MySqlCommand(updateStatement);
+        cmd.Parameters.AddWithValue("@addressId", addressId);
+        cmd.Parameters.AddWithValue("@customerId", customerId);
+        cmd.Parameters.AddWithValue("@customerName", customerName);
+        cmd.Parameters.AddWithValue("@currentDate", currentDate);
+        cmd.Parameters.AddWithValue("@currentUser", userName);
         return cmd;
     }
 

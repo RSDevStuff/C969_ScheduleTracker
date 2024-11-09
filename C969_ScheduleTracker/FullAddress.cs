@@ -8,10 +8,11 @@ public class FullAddress
     public string City { get; set; }
     public int CountryId { get; set; }
     public string Country { get; set; }
+    public string Phone { get; set; }
 
     public FullAddress() { }
 
-    public FullAddress(int addressId, string addressName, int cityId, string city, int countryId, string country)
+    public FullAddress(int addressId, string addressName, int cityId, string city, int countryId, string country, string phone)
     {
         AddressId = addressId;
         AddressName = addressName;
@@ -19,5 +20,6 @@ public class FullAddress
         City = city;
         CountryId = countryId;
         Country = country;
+        Phone = phone;
     }
 }

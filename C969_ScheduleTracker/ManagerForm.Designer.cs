@@ -417,6 +417,7 @@
             updateCustomerButton.TabIndex = 40;
             updateCustomerButton.Text = "Update";
             updateCustomerButton.UseVisualStyleBackColor = true;
+            updateCustomerButton.Click += updateCustomerButton_Click;
             // 
             // removeCustomerButton
             // 

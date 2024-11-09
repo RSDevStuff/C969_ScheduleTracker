@@ -83,6 +83,7 @@ namespace C969_ScheduleTracker
             appointmentGridView.ClearSelection();
             customerGridView.ClearSelection();
         }
+
         // Logic for DateRange ComboBox
         private void dateRangeBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -103,7 +104,8 @@ namespace C969_ScheduleTracker
                         break;
                     case "Today":
                         appointmentGridView.DataSource =
-                            AppointmentManager.GetAppointmentByUserIdAndDate(_userId, currentDate, currentDate.AddDays(1));
+                            AppointmentManager.GetAppointmentByUserIdAndDate(_userId, currentDate,
+                                currentDate.AddDays(1));
                         break;
                     case "Week":
                         appointmentGridView.DataSource =
@@ -120,6 +122,7 @@ namespace C969_ScheduleTracker
                 }
             }
         }
+
         // Logic for selected appointment
         private void appointmentGridView_SelectionChanged(object sender, EventArgs e)
         {
@@ -128,7 +131,8 @@ namespace C969_ScheduleTracker
                 var selectedRow = appointmentGridView.SelectedRows[0];
                 if (selectedRow != null)
                 {
-                    Validation.ValidateInteger(selectedRow.Cells["customerId"].Value.ToString(), out int _customerId, out var message);
+                    Validation.ValidateInteger(selectedRow.Cells["customerId"].Value.ToString(), out int _customerId,
+                        out var message);
                     dateTimePicker.Value = Convert.ToDateTime(selectedRow.Cells["Date"].Value).ToLocalTime();
                     startTimePicker.Value = Convert.ToDateTime(selectedRow.Cells["Start"].Value).ToLocalTime();
                     endTimePicker.Value = Convert.ToDateTime(selectedRow.Cells["End"].Value).ToLocalTime();
@@ -139,11 +143,13 @@ namespace C969_ScheduleTracker
                     customerTextBox.Enabled = false;
                     removeAppointmentButton.Enabled = true;
                     updateAppointmentButton.Enabled = true;
-                    if (Enum.TryParse(typeof(AppointmentType), selectedRow.Cells["Type"].Value?.ToString(), out var appointmentType))
+                    if (Enum.TryParse(typeof(AppointmentType), selectedRow.Cells["Type"].Value?.ToString(),
+                            out var appointmentType))
                     {
                         // Set the Type to the corresponding index of the enum value
                         typeComboBox.SelectedIndex = (int)appointmentType;
                     }
+
                     // Grab the customer corresponding to that appointment
                     foreach (DataGridViewRow row in customerGridView.Rows)
                     {
@@ -154,11 +160,13 @@ namespace C969_ScheduleTracker
                             break;
                         }
                     }
+
                     //Call the customerGridView event listener to update the next tab
                     customerGridView_SelectionChanged(customerGridView, EventArgs.Empty);
                 }
             }
         }
+
         // Clear boxes and selection
         private void clearButton_Click(object sender, EventArgs e)
         {
@@ -184,7 +192,8 @@ namespace C969_ScheduleTracker
                 var selectedRow = customerGridView.SelectedRows[0];
                 if (selectedRow != null)
                 {
-                    Validation.ValidateInteger(selectedRow.Cells["customerId"].Value.ToString(), out int _customerId, out var message);
+                    Validation.ValidateInteger(selectedRow.Cells["customerId"].Value.ToString(), out int _customerId,
+                        out var message);
                     nameTextBox.Text = selectedRow.Cells["Name"].Value?.ToString() ?? "";
                     addressTextBox.Text = selectedRow.Cells["Address"].Value?.ToString() ?? "";
                     phoneTextBox.Text = selectedRow.Cells["Phone"].Value?.ToString() ?? "";
@@ -266,7 +275,8 @@ namespace C969_ScheduleTracker
             else
             {
                 string customerName;
-                if (!Validation.ValidateCustomerId(customerId, CustomerManager.AllCustomers, out customerName, out errorMessage))
+                if (!Validation.ValidateCustomerId(customerId, CustomerManager.AllCustomers, out customerName,
+                        out errorMessage))
                 {
                     errorMessages += errorMessage + "\n";
                     validForm = false;
@@ -326,10 +336,12 @@ namespace C969_ScheduleTracker
                 }
                 else
                 {
-                    if (!Validation.ValidateCustomerId(value, CustomerManager.AllCustomers, out string customerName, out errorMessage))
+                    if (!Validation.ValidateCustomerId(value, CustomerManager.AllCustomers, out string customerName,
+                            out errorMessage))
                     {
                         customerTextBox.Clear();
-                        MessageBox.Show("Customer ID: " + errorMessage, "Invalid Customer ID", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Customer ID: " + errorMessage, "Invalid Customer ID", MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
                     }
                     else
                     {
@@ -413,7 +425,8 @@ namespace C969_ScheduleTracker
 
                     // Pulling out the parts we want from the DateTimePickers
                     DateTime selectedDate = dateTimePicker.Value.Date;
-                    TimeSpan selectedStartTime = new TimeSpan(startTimePicker.Value.Hour, startTimePicker.Value.Minute, 0);
+                    TimeSpan selectedStartTime =
+                        new TimeSpan(startTimePicker.Value.Hour, startTimePicker.Value.Minute, 0);
                     TimeSpan selectedEndTime = new TimeSpan(endTimePicker.Value.Hour, endTimePicker.Value.Minute, 0);
 
                     //Combining into legible DateTimes
@@ -428,7 +441,8 @@ namespace C969_ScheduleTracker
                     }
                     else
                     {
-                        if (Validation.ValidateAppointmentTime(startDateTime, endDateTime, AppointmentManager.AllAppointments,
+                        if (Validation.ValidateAppointmentTime(startDateTime, endDateTime,
+                                AppointmentManager.AllAppointments,
                                 out errorMessage, appointmentId))
                         {
                             errorMessages += errorMessage + "\n";
@@ -450,7 +464,8 @@ namespace C969_ScheduleTracker
                     else
                     {
                         string customerName;
-                        if (!Validation.ValidateCustomerId(customerId, CustomerManager.AllCustomers, out customerName, out errorMessage))
+                        if (!Validation.ValidateCustomerId(customerId, CustomerManager.AllCustomers, out customerName,
+                                out errorMessage))
                         {
                             errorMessages += errorMessage + "\n";
                             validForm = false;
@@ -481,7 +496,8 @@ namespace C969_ScheduleTracker
                             {
                                 int code = DbManager.ExecuteModification(updateStatement);
                                 var appointmentQuery = DbManager.GetAppointmentAll();
-                                var appointmentList = DbManager.ExecuteQueryToBindingList<Appointment>(appointmentQuery);
+                                var appointmentList =
+                                    DbManager.ExecuteQueryToBindingList<Appointment>(appointmentQuery);
                                 AppointmentManager.LoadAppointmentsFromDb(appointmentList);
                                 appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserId(_userId);
                                 appointmentGridView.ClearSelection();
@@ -496,7 +512,8 @@ namespace C969_ScheduleTracker
                     }
                     else
                     {
-                        MessageBox.Show(errorMessages, "Invalid Appointment", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(errorMessages, "Invalid Appointment", MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
                     }
                 }
 
@@ -532,6 +549,7 @@ namespace C969_ScheduleTracker
                     }
                 }
             }
+
             if (validForm)
             {
                 newCustomer.Name = nameTextBox.Text;
@@ -565,7 +583,8 @@ namespace C969_ScheduleTracker
                             else
                             {
                                 // create new addressId using found city and country combination
-                                var mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone, _userName);
+                                var mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone,
+                                    _userName);
                                 addressId = DbManager.ExecuteModificationReturnId(mod);
                                 MessageBox.Show("New Address ID: " + addressId.ToString());
                                 isFound = true;
@@ -582,7 +601,8 @@ namespace C969_ScheduleTracker
                             // create new Address using the created city
                             mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone, _userName);
                             addressId = DbManager.ExecuteModificationReturnId(mod);
-                            MessageBox.Show("New City ID: " + cityId.ToString() + "\n" + "New Address ID: " + addressId.ToString());
+                            MessageBox.Show("New City ID: " + cityId.ToString() + "\n" + "New Address ID: " +
+                                            addressId.ToString());
                             isFound = true;
                             break;
                         }
@@ -602,10 +622,10 @@ namespace C969_ScheduleTracker
                     // ...and new address Id.
                     mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone, _userName);
                     addressId = DbManager.ExecuteModificationReturnId(mod);
-                    MessageBox.Show("New Country ID: " + countryId.ToString() + "\n" + "New City ID: " + cityId.ToString() + "\n" + "New Address ID: " + addressId.ToString());
+                    MessageBox.Show("New Country ID: " + countryId.ToString() + "\n" + "New City ID: " +
+                                    cityId.ToString() + "\n" + "New Address ID: " + addressId.ToString());
 
                 }
-
                 var customerInsert = DbManager.AddNewCustomer(newCustomer.Name, addressId, _userName);
                 var newCustomerId = DbManager.ExecuteModificationReturnId(customerInsert);
                 MessageBox.Show($"New customer created with ID: {newCustomerId}");
@@ -633,7 +653,8 @@ namespace C969_ScheduleTracker
                     MySqlCommand removeStatement = DbManager.RemoveExistingCustomer(customerId);
 
                     DialogResult result =
-                        MessageBox.Show($"Are you sure you want to delete this customer? It will also delete related appointments.",
+                        MessageBox.Show(
+                            $"Are you sure you want to delete this customer? It will also delete related appointments.",
                             "Confirm Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                     if (result == DialogResult.Yes)
                     {
@@ -660,6 +681,158 @@ namespace C969_ScheduleTracker
                         }
                     }
 
+                }
+            }
+        }
+
+        private void updateCustomerButton_Click(object sender, EventArgs e)
+        {
+            bool validForm = true;
+            string errorMessage;
+            string errorMessages = "";
+            string customerName;
+            string customerId;
+            string addressName;
+            string phone;;
+
+            if (customerGridView.SelectedRows.Count > 0)
+            {
+                var selectedRow = customerGridView.SelectedRows[0];
+                if (selectedRow != null)
+                {
+                    foreach (var control in customersTab.Controls)
+                    {
+                        if (control is TextBox textBox)
+                        {
+                            if (textBox.Name == "idBox" || textBox.Name == "searchTextBox")
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                string value = textBox.Text;
+                                if (!Validation.ValidateString(value, out errorMessage))
+                                {
+                                    errorMessages += textBox.Name + ": " + errorMessage + "\n";
+                                    validForm = false;
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                if (validForm)
+                {
+                    Customer newCustomer = new Customer();
+                    newCustomer.Name = nameTextBox.Text;
+                    newCustomer.Address = addressTextBox.Text;
+                    newCustomer.City = cityTextBox.Text;
+                    newCustomer.Country = countryTextBox.Text;
+                    newCustomer.Phone = phoneTextBox.Text;
+
+                    // Grabs addressId, cityId, countryId
+                    int addressId = 0;
+                    int cityId = 0;
+                    int countryId = 0;
+                    bool isFound = false;
+
+                    foreach (var address in CustomerManager.AllAddresses)
+                    {
+                        MessageBox.Show(address.Phone);
+                        if (address.Country == newCustomer.Country.Trim())
+                        {
+                            // If the country exists in our DB, we just select the ID.
+                            countryId = address.CountryId;
+                            if (address.City == newCustomer.City.Trim())
+                            {
+                                // If the city exists in our DB, we just select the ID.
+                                cityId = address.CityId;
+                                if (address.AddressName == newCustomer.Address.Trim())
+                                {
+                                    // If the address exists in our DB, we just select the ID.
+                                    addressId = address.AddressId;
+                                    if (address.Phone == newCustomer.Phone)
+                                    {
+                                        isFound = true;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        // Update the existing address with the phone number
+                                        // Not a perfect solution, but the DB provided doesn't allow for a lot of flexibility.
+                                        var mod = DbManager.UpdateExistingAddress(addressId, newCustomer.Address,
+                                            cityId, newCustomer.Phone, _userName);
+                                        var effected = DbManager.ExecuteModification(mod);
+                                        MessageBox.Show("EFFECTED: " + effected.ToString());
+                                        isFound = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // create new city Id within the existing country
+                                var mod = DbManager.AddNewCity(newCustomer.City, countryId, _userName);
+                                cityId = DbManager.ExecuteModificationReturnId(mod);
+
+
+                                // create new Address using the created city
+                                mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone,
+                                    _userName);
+                                addressId = DbManager.ExecuteModificationReturnId(mod);
+                                isFound = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!isFound)
+                    {
+                        // Create new country ID
+                        var mod = DbManager.AddNewCountry(newCustomer.Country, _userName);
+                        countryId = DbManager.ExecuteModificationReturnId(mod);
+
+                        // ...new cityId
+                        mod = DbManager.AddNewCity(newCustomer.City, countryId, _userName);
+                        cityId = DbManager.ExecuteModificationReturnId(mod);
+
+                        // ...and new address Id.
+                        mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone, _userName);
+                        addressId = DbManager.ExecuteModificationReturnId(mod);
+                        MessageBox.Show("New Country ID: " + countryId.ToString() + "\n" + "New City ID: " +
+                                        cityId.ToString() + "\n" + "New Address ID: " + addressId.ToString());
+                    }
+
+                    // Need a modify customer query that will update the database, everything else should follow??
+                    // Need to verify that appointment customer names will change
+                    customerId = selectedRow.Cells["CustomerId"].Value.ToString();
+                    var customerUpdate = DbManager.UpdateExistingCustomer(customerId, newCustomer.Name, addressId, _userName);
+                    var rows = DbManager.ExecuteModification(customerUpdate);
+                    MessageBox.Show("EFFECTED: " + rows.ToString());
+                    
+                    var customerQuery = DbManager.GetCustomerAll();
+                    var customerList = DbManager.ExecuteQueryToBindingList<Customer>(customerQuery);
+                    
+                    
+                    var addressQuery = DbManager.GetAddressAll();
+                    var addressList = DbManager.ExecuteQueryToBindingList<FullAddress>(addressQuery);
+                    CustomerManager.LoadAddressesFromDb(addressList);
+                    
+                    CustomerManager.LoadCustomersFromDb(customerList);
+                    customerGridView.DataSource = customerList;
+
+                    
+                    // Refresh appointment list
+                    var appointmentQuery = DbManager.GetAppointmentAll();
+                    var appointmentList = DbManager.ExecuteQueryToBindingList<Appointment>(appointmentQuery);
+                    AppointmentManager.LoadAppointmentsFromDb(appointmentList);
+                    appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserId(_userId);
+
+                }
+                else
+                {
+                    MessageBox.Show(errorMessages, "Invalid Form", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
             }
         }
