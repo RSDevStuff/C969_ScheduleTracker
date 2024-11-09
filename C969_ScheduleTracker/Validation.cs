@@ -41,6 +41,12 @@ public static class Validation
             return true;
         }
 
+        if (startEst >= endEst)
+        {
+            errorMessage = "Start time must be before End Time.";
+            return true;
+        }
+
         foreach (var appointment in appointments)
         {
             DateTime existingStartTime = appointment.Start;
@@ -103,9 +109,10 @@ public static class Validation
         return true;
     }
 
+    // Make sure the phone number field is valid
     public static bool ValidatePhoneNumber(string phone, out string errorMessage)
     {
-        // Ugh, REGEX
+        // UGH, REGEX. When it works, it works. 
         string pattern = @"^[0-9-]+$"; // Allows numbers and dashes only
         if (!Regex.IsMatch(phone, pattern))
         {
@@ -115,6 +122,7 @@ public static class Validation
         errorMessage = "";
         return true;
     }
+
     // Make sure an integer is valid and greater than zero
     public static bool ValidateInteger(string input, out int value, out string errorMessage)
     {
