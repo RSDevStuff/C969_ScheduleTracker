@@ -16,6 +16,22 @@ public static class AppointmentManager
             _allAppointments.Add(appointment);
         }
     }
+
+    public static void CheckForUpcomingAppointments(int userId)
+    {
+        DateTime currentTime = DateTime.Now;
+
+        foreach (var appointment in AllAppointments)
+        {
+            if ((appointment.Start.ToLocalTime() >= currentTime && appointment.Start.ToLocalTime() <= currentTime.AddMinutes(15)) && appointment.UserId == userId)
+            {
+                MessageBox.Show($"Appointment with {appointment.Customer} at {appointment.Start.ToLocalTime()}.",
+                    "Upcoming Appointment",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                break;
+            }
+        }
+    }
     public static void AddAppointment(Appointment appointment)
     {
         _allAppointments.Add(appointment);

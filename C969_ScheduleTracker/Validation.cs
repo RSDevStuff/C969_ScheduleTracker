@@ -5,27 +5,41 @@ namespace C969_ScheduleTracker;
 
 public static class Validation
 {
-    // Validate a DateTime can be converted from string
+    // Validate a DateTime is not before the current time (with offset) and that it's not on Saturday or Sunday
     public static bool ValidateDateTime(DateTime selectedDate, out string errorMessage)
     {
-        DateTime currentDate = DateTime.Now;
+        TimeZoneInfo estZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+        DateTime currentEstDate = TimeZoneInfo.ConvertTimeFromUtc(selectedDate, estZone);
 
         // Provide flexibility for the scheduled time
-        if (selectedDate < currentDate.AddMinutes(-15))
+        if (currentEstDate < currentEstDate.AddMinutes(-15))
         {
             errorMessage = $"DateTime: {selectedDate.ToLocalTime()}. No time travelling allowed!";
             return false;
         }
-        else
+        // Make sure the day falls on a Monday - Friday
+        if (currentEstDate.DayOfWeek == DayOfWeek.Saturday || currentEstDate.DayOfWeek == DayOfWeek.Sunday)
         {
-            errorMessage = "";
-            return true;
+            errorMessage = "Appointments cannot be scheduled on the weekend (Saturday/Sunday)";
+            return false;
         }
+        errorMessage = "";
+        return true;
     }
 
-    // Validate appointment times, to make sure there's no clash within a list of existing appointments
+    // Validate appointment times, to make sure there's no clash within a list of existing appointments, check for operating hours
     public static bool ValidateAppointmentTime(DateTime start, DateTime end, BindingList<Appointment> appointments, out string errorMessage, string appointmentId)
     {
+        TimeZoneInfo estZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+        DateTime startEst = TimeZoneInfo.ConvertTimeFromUtc(start, estZone);
+        DateTime endEst = TimeZoneInfo.ConvertTimeFromUtc(end, estZone);
+
+        if ((startEst.Hour < 9 || startEst.Hour >= 17) || (endEst.Hour < 9 || endEst.Hour >= 17))
+        {
+            errorMessage = "Appointments can only be scheduled between 9:00 AM and 5:00 PM EST.";
+            return true;
+        }
+
         foreach (var appointment in appointments)
         {
             DateTime existingStartTime = appointment.Start;

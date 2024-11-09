@@ -36,7 +36,7 @@
             startTimePicker = new DateTimePicker();
             dateTimePicker = new DateTimePicker();
             clearButton = new Button();
-            exitButton = new Button();
+            signoutButton = new Button();
             reportsButton = new Button();
             updateAppointmentButton = new Button();
             removeAppointmentButton = new Button();
@@ -58,7 +58,7 @@
             countryTextBox = new TextBox();
             custClearButton = new Button();
             searchTextBox = new TextBox();
-            customerExitButton = new Button();
+            custSignOutButton = new Button();
             updateCustomerButton = new Button();
             removeCustomerButton = new Button();
             addCustomerButton = new Button();
@@ -100,7 +100,7 @@
             appointmentsTab.Controls.Add(startTimePicker);
             appointmentsTab.Controls.Add(dateTimePicker);
             appointmentsTab.Controls.Add(clearButton);
-            appointmentsTab.Controls.Add(exitButton);
+            appointmentsTab.Controls.Add(signoutButton);
             appointmentsTab.Controls.Add(reportsButton);
             appointmentsTab.Controls.Add(updateAppointmentButton);
             appointmentsTab.Controls.Add(removeAppointmentButton);
@@ -177,14 +177,15 @@
             clearButton.UseVisualStyleBackColor = true;
             clearButton.Click += clearButton_Click;
             // 
-            // exitButton
+            // signoutButton
             // 
-            exitButton.Location = new Point(719, 293);
-            exitButton.Name = "exitButton";
-            exitButton.Size = new Size(75, 39);
-            exitButton.TabIndex = 31;
-            exitButton.Text = "Exit";
-            exitButton.UseVisualStyleBackColor = true;
+            signoutButton.Location = new Point(719, 293);
+            signoutButton.Name = "signoutButton";
+            signoutButton.Size = new Size(75, 39);
+            signoutButton.TabIndex = 31;
+            signoutButton.Text = "Signout";
+            signoutButton.UseVisualStyleBackColor = true;
+            signoutButton.Click += signoutButton_Click;
             // 
             // reportsButton
             // 
@@ -228,10 +229,10 @@
             // dateRangeBox
             // 
             dateRangeBox.FormattingEnabled = true;
-            dateRangeBox.Items.AddRange(new object[] { "All", "Today", "Week", "Month", "Year" });
-            dateRangeBox.Location = new Point(678, 6);
+            dateRangeBox.Items.AddRange(new object[] { "All", "Today", "Week", "Month", "Year", "Specific Date" });
+            dateRangeBox.Location = new Point(669, 6);
             dateRangeBox.Name = "dateRangeBox";
-            dateRangeBox.Size = new Size(116, 29);
+            dateRangeBox.Size = new Size(125, 29);
             dateRangeBox.TabIndex = 13;
             dateRangeBox.SelectedIndexChanged += dateRangeBox_SelectedIndexChanged;
             // 
@@ -239,7 +240,7 @@
             // 
             dateRangeLabel.AutoSize = true;
             dateRangeLabel.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            dateRangeLabel.Location = new Point(582, 9);
+            dateRangeLabel.Location = new Point(565, 9);
             dateRangeLabel.Name = "dateRangeLabel";
             dateRangeLabel.Size = new Size(98, 21);
             dateRangeLabel.TabIndex = 12;
@@ -336,7 +337,7 @@
             customersTab.Controls.Add(countryTextBox);
             customersTab.Controls.Add(custClearButton);
             customersTab.Controls.Add(searchTextBox);
-            customersTab.Controls.Add(customerExitButton);
+            customersTab.Controls.Add(custSignOutButton);
             customersTab.Controls.Add(updateCustomerButton);
             customersTab.Controls.Add(removeCustomerButton);
             customersTab.Controls.Add(addCustomerButton);
@@ -400,14 +401,14 @@
             searchTextBox.Size = new Size(133, 29);
             searchTextBox.TabIndex = 38;
             // 
-            // customerExitButton
+            // custSignOutButton
             // 
-            customerExitButton.Location = new Point(719, 293);
-            customerExitButton.Name = "customerExitButton";
-            customerExitButton.Size = new Size(75, 39);
-            customerExitButton.TabIndex = 44;
-            customerExitButton.Text = "Exit";
-            customerExitButton.UseVisualStyleBackColor = true;
+            custSignOutButton.Location = new Point(719, 293);
+            custSignOutButton.Name = "custSignOutButton";
+            custSignOutButton.Size = new Size(75, 39);
+            custSignOutButton.TabIndex = 44;
+            custSignOutButton.Text = "Signout";
+            custSignOutButton.UseVisualStyleBackColor = true;
             // 
             // updateCustomerButton
             // 
@@ -552,6 +553,7 @@
             Controls.Add(managerFormTabControl);
             Name = "ManagerForm";
             Text = "Schedule Manager";
+            FormClosing += ManagerForm_FormClosing;
             managerFormTabControl.ResumeLayout(false);
             appointmentsTab.ResumeLayout(false);
             appointmentsTab.PerformLayout();
@@ -580,11 +582,11 @@
         private DataGridView appointmentGridView;
         private Button removeAppointmentButton;
         private Button addAppointmentButton;
-        private Button exitButton;
+        private Button signoutButton;
         private Button reportsButton;
         private Button updateAppointmentButton;
         private TextBox searchTextBox;
-        private Button customerExitButton;
+        private Button custSignOutButton;
         private Button updateCustomerButton;
         private Button removeCustomerButton;
         private Button addCustomerButton;

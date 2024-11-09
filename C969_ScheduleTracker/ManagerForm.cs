@@ -37,6 +37,11 @@ namespace C969_ScheduleTracker
             startTimePicker.CustomFormat = "hh:mm tt";
             startTimePicker.Format = DateTimePickerFormat.Custom;
 
+            // This inserts an appointment into the appointment table, 15 minutes from the moment the form is initialized to demo the capability exists
+            var addUpcomingAppointment = DbManager.InsertNewAppointmentCommand(1, _userId, "Other",
+                DateTime.Now.ToUniversalTime().AddMinutes(10), DateTime.Now.ToUniversalTime().AddMinutes(70), _userName);
+            DbManager.ExecuteModification(addUpcomingAppointment);
+
             appointmentQuery = DbManager.GetAppointmentAll();
             customerQuery = DbManager.GetCustomerAll();
             addressQuery = DbManager.GetAddressAll();
@@ -45,9 +50,6 @@ namespace C969_ScheduleTracker
             var appointmentList = DbManager.ExecuteQueryToBindingList<Appointment>(appointmentQuery);
             var addressList = DbManager.ExecuteQueryToBindingList<FullAddress>(addressQuery);
 
-
-            // Debug print out to reflect current rows and date
-            //MessageBox.Show("Appointment List Count: " + appointmentList.Count().ToString() + "\n" + "Customer List Count: " + customerList.Count().ToString());
 
             // Populate DataGridViews
             AppointmentManager.LoadAppointmentsFromDb(appointmentList);
@@ -63,8 +65,8 @@ namespace C969_ScheduleTracker
             appointmentGridView.Columns["CustomerId"].Visible = false;
             appointmentGridView.Columns["AppointmentId"].Visible = false;
             appointmentGridView.Columns["Date"].DefaultCellStyle.Format = "MM/dd/yyyy";
-            appointmentGridView.Columns["Start"].DefaultCellStyle.Format = "hh:mm tt";
-            appointmentGridView.Columns["End"].DefaultCellStyle.Format = "hh:mm tt";
+            appointmentGridView.Columns["Start"].DefaultCellStyle.Format = "hh:mm tt x";
+            appointmentGridView.Columns["End"].DefaultCellStyle.Format = "hh:mm tt x";
             appointmentGridView.RowHeadersVisible = false;
             appointmentGridView.AllowUserToAddRows = false;
             appointmentGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -82,6 +84,7 @@ namespace C969_ScheduleTracker
 
             appointmentGridView.ClearSelection();
             customerGridView.ClearSelection();
+            AppointmentManager.CheckForUpcomingAppointments(_userId);
         }
 
         // Logic for DateRange ComboBox
@@ -118,6 +121,17 @@ namespace C969_ScheduleTracker
                     case "Year":
                         appointmentGridView.DataSource =
                             AppointmentManager.GetAppointmentByUserIdAndDate(_userId, startofYear, endofYear);
+                        break;
+                    case "Specific Date":
+                        using (var datePickerDialog = new DatePickerDialog())
+                        {
+                            var result = datePickerDialog.ShowDialog();
+                            if (result == DialogResult.OK)
+                            {
+                                DateTime selectedDate = datePickerDialog.SelectedDate;
+                                appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserIdAndDate(_userId, selectedDate, selectedDate.AddDays(1));
+                            }
+                        }
                         break;
                 }
             }
@@ -393,6 +407,7 @@ namespace C969_ScheduleTracker
             if (appointmentGridView.Columns[e.ColumnIndex].Name == "Start" ||
                 appointmentGridView.Columns[e.ColumnIndex].Name == "End")
             {
+                // Convert it to local time
                 if (e.Value != null && e.Value is DateTime utcDateTime)
                 {
                     DateTime localDateTime = utcDateTime.ToLocalTime();
@@ -693,7 +708,7 @@ namespace C969_ScheduleTracker
             string customerName;
             string customerId;
             string addressName;
-            string phone;;
+            string phone; ;
 
             if (customerGridView.SelectedRows.Count > 0)
             {
@@ -810,19 +825,19 @@ namespace C969_ScheduleTracker
                     var customerUpdate = DbManager.UpdateExistingCustomer(customerId, newCustomer.Name, addressId, _userName);
                     var rows = DbManager.ExecuteModification(customerUpdate);
                     MessageBox.Show("EFFECTED: " + rows.ToString());
-                    
+
                     var customerQuery = DbManager.GetCustomerAll();
                     var customerList = DbManager.ExecuteQueryToBindingList<Customer>(customerQuery);
-                    
-                    
+
+
                     var addressQuery = DbManager.GetAddressAll();
                     var addressList = DbManager.ExecuteQueryToBindingList<FullAddress>(addressQuery);
                     CustomerManager.LoadAddressesFromDb(addressList);
-                    
+
                     CustomerManager.LoadCustomersFromDb(customerList);
                     customerGridView.DataSource = customerList;
 
-                    
+
                     // Refresh appointment list
                     var appointmentQuery = DbManager.GetAppointmentAll();
                     var appointmentList = DbManager.ExecuteQueryToBindingList<Appointment>(appointmentQuery);
@@ -835,6 +850,28 @@ namespace C969_ScheduleTracker
                     MessageBox.Show(errorMessages, "Invalid Form", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
             }
+        }
+
+        private void signoutButton_Click(object sender, EventArgs e)
+        {
+            Hide();
+
+            LogIn loginForm = new LogIn();
+
+            if (loginForm.ShowDialog() == DialogResult.OK)
+            {
+                int userId = loginForm.UserID;
+                string userName = loginForm.UserName;
+
+                ManagerForm newManagerForm = new ManagerForm(userId, userName);
+                newManagerForm.ShowDialog();
+            }
+        }
+
+        private void ManagerForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Make sure the application closes, and prevents the hidden forms from holding the program hostage
+                Application.Exit();
         }
     }
 }
