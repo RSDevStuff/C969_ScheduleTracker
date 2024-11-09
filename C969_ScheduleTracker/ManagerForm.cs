@@ -45,7 +45,7 @@ namespace C969_ScheduleTracker
             var appointmentList = DbManager.ExecuteQueryToBindingList<Appointment>(appointmentQuery);
             var addressList = DbManager.ExecuteQueryToBindingList<FullAddress>(addressQuery);
 
-            
+
             // Debug print out to reflect current rows and date
             //MessageBox.Show("Appointment List Count: " + appointmentList.Count().ToString() + "\n" + "Customer List Count: " + customerList.Count().ToString());
 
@@ -260,7 +260,7 @@ namespace C969_ScheduleTracker
             //Validate customer ID exists and is good
             if (!Validation.ValidateInteger(customerIdBox.Text, out customerId, out errorMessage))
             {
-                errorMessages += errorMessage;
+                errorMessages += "Customer ID: " + errorMessage;
                 validForm = false;
             }
             else
@@ -526,7 +526,7 @@ namespace C969_ScheduleTracker
                         string value = textBox.Text;
                         if (!Validation.ValidateString(value, out errorMessage))
                         {
-                            errorMessages += errorMessage;
+                            errorMessages += textBox.Name + ": " + errorMessage + "\n";
                             validForm = false;
                         }
                     }
@@ -539,13 +539,13 @@ namespace C969_ScheduleTracker
                 newCustomer.City = cityTextBox.Text;
                 newCustomer.Country = countryTextBox.Text;
                 newCustomer.Phone = phoneTextBox.Text;
-                
+
                 // Grabs addressId, cityId, countryId
                 int addressId = 0;
                 int cityId = 0;
                 int countryId = 0;
                 bool isFound = false;
-                
+
                 foreach (var address in CustomerManager.AllAddresses)
                 {
                     if (address.Country == newCustomer.Country.Trim())
@@ -565,7 +565,7 @@ namespace C969_ScheduleTracker
                             else
                             {
                                 // create new addressId using found city and country combination
-                                var mod = DbManager.AddNewAddress(newCustomer.Address, cityId,  newCustomer.Phone, _userName);
+                                var mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone, _userName);
                                 addressId = DbManager.ExecuteModificationReturnId(mod);
                                 MessageBox.Show("New Address ID: " + addressId.ToString());
                                 isFound = true;
@@ -577,7 +577,7 @@ namespace C969_ScheduleTracker
                             // create new city Id within the existing country
                             var mod = DbManager.AddNewCity(newCustomer.City, countryId, _userName);
                             cityId = DbManager.ExecuteModificationReturnId(mod);
-                            
+
 
                             // create new Address using the created city
                             mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone, _userName);
@@ -620,6 +620,48 @@ namespace C969_ScheduleTracker
                 MessageBox.Show(errorMessages, "Invalid Form", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
 
+        }
+
+        private void removeCustomerButton_Click(object sender, EventArgs e)
+        {
+            if (customerGridView.SelectedRows.Count > 0)
+            {
+                var selectedRow = customerGridView.SelectedRows[0];
+                if (selectedRow != null)
+                {
+                    string customerId = selectedRow.Cells["CustomerId"].Value.ToString();
+                    MySqlCommand removeStatement = DbManager.RemoveExistingCustomer(customerId);
+
+                    DialogResult result =
+                        MessageBox.Show($"Are you sure you want to delete this customer? It will also delete related appointments.",
+                            "Confirm Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    if (result == DialogResult.Yes)
+                    {
+                        try
+                        {
+                            int code = DbManager.ExecuteModification(removeStatement);
+
+                            var appointmentQuery = DbManager.GetAppointmentAll();
+                            var appointmentList = DbManager.ExecuteQueryToBindingList<Appointment>(appointmentQuery);
+                            AppointmentManager.LoadAppointmentsFromDb(appointmentList);
+                            appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserId(_userId);
+
+                            var customerQuery = DbManager.GetCustomerAll();
+                            var customerList = DbManager.ExecuteQueryToBindingList<Customer>(customerQuery);
+                            CustomerManager.LoadCustomersFromDb(customerList);
+                            customerGridView.DataSource = CustomerManager.AllCustomers;
+
+                            appointmentGridView.ClearSelection();
+                            customerGridView.ClearSelection();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("ERROR:" + ex);
+                        }
+                    }
+
+                }
+            }
         }
     }
 }

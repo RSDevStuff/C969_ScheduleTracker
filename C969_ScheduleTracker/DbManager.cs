@@ -268,5 +268,14 @@ public static class DbManager
         cmd.Parameters.AddWithValue("@userName", userName);
         return cmd;
     }
+    public static MySqlCommand RemoveExistingCustomer(string customerId)
+    {
+        string removeStatement =
+            "DELETE FROM appointment WHERE customerId = @customerId; " +
+            "DELETE FROM customer WHERE customerId = @customerId;";
+        MySqlCommand cmd = new MySqlCommand(removeStatement);
+        cmd.Parameters.AddWithValue("@customerId", customerId);
+        return cmd;
+    }
 
 }

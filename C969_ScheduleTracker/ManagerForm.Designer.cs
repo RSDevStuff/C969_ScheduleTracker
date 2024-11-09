@@ -426,6 +426,7 @@
             removeCustomerButton.TabIndex = 39;
             removeCustomerButton.Text = "Remove";
             removeCustomerButton.UseVisualStyleBackColor = true;
+            removeCustomerButton.Click += removeCustomerButton_Click;
             // 
             // addCustomerButton
             // 
