@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Text.RegularExpressions;
 using Org.BouncyCastle.Asn1.Mozilla;
 
 namespace C969_ScheduleTracker;
@@ -102,6 +103,18 @@ public static class Validation
         return true;
     }
 
+    public static bool ValidatePhoneNumber(string phone, out string errorMessage)
+    {
+        // Ugh, REGEX
+        string pattern = @"^[0-9-]+$"; // Allows numbers and dashes only
+        if (!Regex.IsMatch(phone, pattern))
+        {
+            errorMessage = "Phone Number: Only numbers and dashes are allowed.";
+            return false;
+        }
+        errorMessage = "";
+        return true;
+    }
     // Make sure an integer is valid and greater than zero
     public static bool ValidateInteger(string input, out int value, out string errorMessage)
     {

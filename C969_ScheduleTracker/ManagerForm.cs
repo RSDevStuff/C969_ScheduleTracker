@@ -553,6 +553,14 @@ namespace C969_ScheduleTracker
                     {
                         continue;
                     }
+                    if (textBox.Name == "phoneTextBox")
+                    {
+                        if (!Validation.ValidatePhoneNumber(textBox.Text.ToString(), out errorMessage))
+                        {
+                            errorMessages += errorMessage + "\n";
+                            validForm = false;
+                        }
+                    }
                     else
                     {
                         string value = textBox.Text;
@@ -708,7 +716,7 @@ namespace C969_ScheduleTracker
             string customerName;
             string customerId;
             string addressName;
-            string phone; ;
+            string phone;
 
             if (customerGridView.SelectedRows.Count > 0)
             {
@@ -722,6 +730,15 @@ namespace C969_ScheduleTracker
                             if (textBox.Name == "idBox" || textBox.Name == "searchTextBox")
                             {
                                 continue;
+                            }
+
+                            if (textBox.Name == "phoneTextBox")
+                            {
+                                if (!Validation.ValidatePhoneNumber(textBox.Text.ToString(), out errorMessage))
+                                {
+                                    errorMessages += errorMessage + "\n";
+                                    validForm = false;
+                                }
                             }
                             else
                             {
