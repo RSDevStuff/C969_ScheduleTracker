@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Data;
 using MySql.Data.MySqlClient;
 using Mysqlx.Resultset;
 using Org.BouncyCastle.Asn1.Mozilla;
@@ -11,45 +12,98 @@ public static class DbManager
     private static readonly string ConnectionString =
         "server=localhost;user=sqlUser;database=client_schedule;port=3306;password=Passw0rd!";
 
-    //Custom object implementation
+    //Custom object implementation, rewritten to allow ad hoc objects and returns them as DataTables
     //Requires an empty constructor for each custom object
-    public static BindingList<T> ExecuteQueryToBindingList<T>(MySqlCommand cmd) where T : new()
+    public static object ExecuteQuery(MySqlCommand cmd, Type type = null)
     {
-        var resultList = new BindingList<T>();
-        using (MySqlConnection connection = new MySqlConnection(ConnectionString))
+        // If a specific type is provided, create a BindingList of that type, similar to ExecuteQueryToBindingList.
+        if (type != null)
         {
-            try
-            {
-                connection.Open();
-                cmd.Connection = connection;
+            var bindingListType = typeof(BindingList<>).MakeGenericType(type);
+            var resultList = (IBindingList)Activator.CreateInstance(bindingListType);
 
-                using (MySqlDataReader reader = cmd.ExecuteReader())
+            using (MySqlConnection connection = new MySqlConnection(ConnectionString))
+            {
+                try
                 {
-                    // We use GetProperies to pull properties from custom object
-                    var properties = typeof(T).GetProperties();
-                    while (reader.Read())
+                    connection.Open();
+                    cmd.Connection = connection;
+
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
-                        // Create an instance of the custom object for each row...
-                        T item = new T();
-                        // For each property, we'll check if the column matching it is null,
-                        // If it isn't, we'll set the item's property of that name to the value of it
-                        foreach (var prop in properties)
+                        var properties = type.GetProperties();
+                        while (reader.Read())
                         {
-                            if (!reader.IsDBNull(reader.GetOrdinal(prop.Name)))
+                            var item = Activator.CreateInstance(type);
+                            foreach (var prop in properties)
                             {
-                                prop.SetValue(item, reader.GetValue(reader.GetOrdinal(prop.Name)));
+                                if (!reader.IsDBNull(reader.GetOrdinal(prop.Name)))
+                                {
+                                    prop.SetValue(item, reader.GetValue(reader.GetOrdinal(prop.Name)));
+                                }
                             }
+                            resultList.Add(item);
                         }
-                        resultList.Add(item);
                     }
                 }
-            }
-            catch (MySqlException e)
-            {
-                MessageBox.Show($"Error: {e.Message}");
+                catch (MySqlException e)
+                {
+                    MessageBox.Show($"Error: {e.Message}");
+                }
             }
 
             return resultList;
+        }
+        else
+        {
+            // Fall back to DataTable for ad hoc queries without a class structure
+            var resultList = new List<Dictionary<string, object>>();
+            DataTable table = new DataTable();
+
+            using (MySqlConnection connection = new MySqlConnection(ConnectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    cmd.Connection = connection;
+
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            table.Columns.Add(reader.GetName(i), typeof(object));
+                        }
+
+                        while (reader.Read())
+                        {
+                            var row = new Dictionary<string, object>();
+
+                            for (int i = 0; i < reader.FieldCount; i++)
+                            {
+                                var columnName = reader.GetName(i);
+                                // Lambda to determine if a column is null, if it is assign it so, else get the value.
+                                var columnValue = reader.IsDBNull(i) ? DBNull.Value : reader.GetValue(i);
+                                row[columnName] = columnValue;
+                            }
+                            resultList.Add(row);
+
+                            // Populate DataTable row 
+                            var dataRow = table.NewRow();
+                            foreach (var kvp in row)
+                            {
+                                dataRow[kvp.Key] = kvp.Value;
+                            }
+                            table.Rows.Add(dataRow);
+                        }
+                    }
+                }
+                catch (MySqlException e)
+                {
+                    MessageBox.Show($"Error: {e.Message}");
+                }
+            }
+
+            return table;
         }
     }
 
@@ -320,4 +374,21 @@ public static class DbManager
         return cmd;
     }
 
+    public static MySqlCommand GrabAllUsers()
+    {
+        string query = "SELECT userId as UserId, userName as Username, password as Password FROM user";
+        MySqlCommand cmd = new MySqlCommand(query);
+        return cmd;
+    }
+
+    public static MySqlCommand GetTypeCounts(DateTime start, DateTime end)
+    {
+        string query = "SELECT type as Type, COUNT(type) as Count FROM appointment " +
+                       "WHERE (start BETWEEN @startDate AND @endDate) " +
+                       "GROUP BY type";
+        MySqlCommand cmd = new MySqlCommand(query);
+        cmd.Parameters.AddWithValue("@startDate", start);
+        cmd.Parameters.AddWithValue("@endDate", end);
+        return cmd;
+    }
 }

@@ -4,7 +4,7 @@ public enum AppointmentType
 {
     Scrum = 0,
     Presentation = 1,
-    Troubleshooting = 2,
+    Troubleshoot = 2,
     Programming = 3,
     Coffee = 4,
     Other = 5,

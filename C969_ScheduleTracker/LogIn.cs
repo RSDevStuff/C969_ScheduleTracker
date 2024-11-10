@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace C969_ScheduleTracker
 {
     public partial class LogIn : Form
@@ -23,7 +25,7 @@ namespace C969_ScheduleTracker
             if (!String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password))
             {
                 var query = DbManager.GetAuthenticationString(username.Trim());
-                var result = DbManager.ExecuteQueryToBindingList<User>(query);
+                var result = (BindingList<User>) DbManager.ExecuteQuery(query, typeof(User));
 
                 if (result.Count > 0 && password == result[0].Password.ToString())
                 {

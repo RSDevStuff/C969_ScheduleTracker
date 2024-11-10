@@ -29,7 +29,7 @@ namespace C969_ScheduleTracker
 
             InitializeComponent();
 
-            // Initialize combo boxes, datetime pickers, and DGV's
+            // Initialize combo boxes, datetime pickers, and DGVs
             dateRangeBox.SelectedIndex = 0;
             typeComboBox.DataSource = Enum.GetValues(typeof(AppointmentType));
             endTimePicker.CustomFormat = "hh:mm tt";
@@ -46,9 +46,9 @@ namespace C969_ScheduleTracker
             customerQuery = DbManager.GetCustomerAll();
             addressQuery = DbManager.GetAddressAll();
 
-            var customerList = DbManager.ExecuteQueryToBindingList<Customer>(customerQuery);
-            var appointmentList = DbManager.ExecuteQueryToBindingList<Appointment>(appointmentQuery);
-            var addressList = DbManager.ExecuteQueryToBindingList<FullAddress>(addressQuery);
+            var customerList = (BindingList<Customer>) DbManager.ExecuteQuery(customerQuery, typeof(Customer));
+            var appointmentList = (BindingList<Appointment>) DbManager.ExecuteQuery(appointmentQuery, typeof(Appointment));
+            var addressList = (BindingList<FullAddress>) DbManager.ExecuteQuery(addressQuery, typeof(FullAddress));
 
 
             // Populate DataGridViews
@@ -316,7 +316,7 @@ namespace C969_ScheduleTracker
                 {
                     int code = DbManager.ExecuteModification(insertStatement);
                     var appointmentQuery = DbManager.GetAppointmentAll();
-                    var appointmentList = DbManager.ExecuteQueryToBindingList<Appointment>(appointmentQuery);
+                    var appointmentList = (BindingList<Appointment>) DbManager.ExecuteQuery(appointmentQuery, typeof(Appointment));
                     AppointmentManager.LoadAppointmentsFromDb(appointmentList);
                     appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserId(_userId);
                     appointmentGridView.ClearSelection();
@@ -384,7 +384,8 @@ namespace C969_ScheduleTracker
                         {
                             int code = DbManager.ExecuteModification(removeStatement);
                             var appointmentQuery = DbManager.GetAppointmentAll();
-                            var appointmentList = DbManager.ExecuteQueryToBindingList<Appointment>(appointmentQuery);
+
+                            var appointmentList = (BindingList<Appointment>) DbManager.ExecuteQuery(appointmentQuery, typeof(Appointment));
                             AppointmentManager.LoadAppointmentsFromDb(appointmentList);
                             appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserId(_userId);
                             appointmentGridView.ClearSelection();
@@ -511,8 +512,8 @@ namespace C969_ScheduleTracker
                             {
                                 int code = DbManager.ExecuteModification(updateStatement);
                                 var appointmentQuery = DbManager.GetAppointmentAll();
-                                var appointmentList =
-                                    DbManager.ExecuteQueryToBindingList<Appointment>(appointmentQuery);
+                                var appointmentList = (BindingList<Appointment>)
+                                    DbManager.ExecuteQuery(appointmentQuery, typeof(Appointment));
                                 AppointmentManager.LoadAppointmentsFromDb(appointmentList);
                                 appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserId(_userId);
                                 appointmentGridView.ClearSelection();
@@ -653,7 +654,7 @@ namespace C969_ScheduleTracker
                 var newCustomerId = DbManager.ExecuteModificationReturnId(customerInsert);
                 MessageBox.Show($"New customer created with ID: {newCustomerId}");
                 var customerQuery = DbManager.GetCustomerAll();
-                var customerList = DbManager.ExecuteQueryToBindingList<Customer>(customerQuery);
+                var customerList = (BindingList<Customer>) DbManager.ExecuteQuery(customerQuery, typeof(Customer));
                 CustomerManager.LoadCustomersFromDb(customerList);
                 customerGridView.DataSource = customerList;
 
@@ -686,12 +687,12 @@ namespace C969_ScheduleTracker
                             int code = DbManager.ExecuteModification(removeStatement);
 
                             var appointmentQuery = DbManager.GetAppointmentAll();
-                            var appointmentList = DbManager.ExecuteQueryToBindingList<Appointment>(appointmentQuery);
+                            var appointmentList = (BindingList<Appointment>) DbManager.ExecuteQuery(appointmentQuery, typeof(Appointment));
                             AppointmentManager.LoadAppointmentsFromDb(appointmentList);
                             appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserId(_userId);
 
                             var customerQuery = DbManager.GetCustomerAll();
-                            var customerList = DbManager.ExecuteQueryToBindingList<Customer>(customerQuery);
+                            var customerList = (BindingList<Customer>) DbManager.ExecuteQuery(customerQuery, typeof(Customer));
                             CustomerManager.LoadCustomersFromDb(customerList);
                             customerGridView.DataSource = CustomerManager.AllCustomers;
 
@@ -844,11 +845,11 @@ namespace C969_ScheduleTracker
                     MessageBox.Show("EFFECTED: " + rows.ToString());
 
                     var customerQuery = DbManager.GetCustomerAll();
-                    var customerList = DbManager.ExecuteQueryToBindingList<Customer>(customerQuery);
+                    var customerList = (BindingList<Customer>) DbManager.ExecuteQuery(customerQuery, typeof(Customer));
 
 
                     var addressQuery = DbManager.GetAddressAll();
-                    var addressList = DbManager.ExecuteQueryToBindingList<FullAddress>(addressQuery);
+                    var addressList = (BindingList<FullAddress>) DbManager.ExecuteQuery(addressQuery, typeof(FullAddress));
                     CustomerManager.LoadAddressesFromDb(addressList);
 
                     CustomerManager.LoadCustomersFromDb(customerList);
@@ -857,7 +858,7 @@ namespace C969_ScheduleTracker
 
                     // Refresh appointment list
                     var appointmentQuery = DbManager.GetAppointmentAll();
-                    var appointmentList = DbManager.ExecuteQueryToBindingList<Appointment>(appointmentQuery);
+                    var appointmentList = (BindingList<Appointment>) DbManager.ExecuteQuery(appointmentQuery, typeof(Appointment));
                     AppointmentManager.LoadAppointmentsFromDb(appointmentList);
                     appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserId(_userId);
 
@@ -888,7 +889,13 @@ namespace C969_ScheduleTracker
         private void ManagerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             // Make sure the application closes, and prevents the hidden forms from holding the program hostage
-                Application.Exit();
+            Application.Exit();
+        }
+
+        private void reportsButton_Click(object sender, EventArgs e)
+        {
+            ReportForm reportForm = new ReportForm();
+            reportForm.ShowDialog();
         }
     }
 }

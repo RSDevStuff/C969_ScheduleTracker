@@ -44,6 +44,7 @@
             customerAppointmentRadioButton = new RadioButton();
             consultantDropBox = new ComboBox();
             consultantLabel = new Label();
+            reportInfoTextBox = new TextBox();
             ((System.ComponentModel.ISupportInitialize)reportDataView).BeginInit();
             SuspendLayout();
             // 
@@ -131,6 +132,7 @@
             runReportButton.TabIndex = 43;
             runReportButton.Text = "Run Report";
             runReportButton.UseVisualStyleBackColor = true;
+            runReportButton.Click += runReportButton_Click;
             // 
             // clearReportButton
             // 
@@ -164,6 +166,7 @@
             appointmentTypeRadioButton.TabStop = true;
             appointmentTypeRadioButton.Text = "Appointment Type";
             appointmentTypeRadioButton.UseVisualStyleBackColor = true;
+            appointmentTypeRadioButton.CheckedChanged += appointmentTypeRadioButton_CheckedChanged;
             // 
             // consultantAppointmentRadioButton
             // 
@@ -175,6 +178,7 @@
             consultantAppointmentRadioButton.TabIndex = 47;
             consultantAppointmentRadioButton.Text = "Consultant Appointments";
             consultantAppointmentRadioButton.UseVisualStyleBackColor = true;
+            consultantAppointmentRadioButton.CheckedChanged += consultantAppointmentRadioButton_CheckedChanged;
             // 
             // customerAppointmentRadioButton
             // 
@@ -186,6 +190,7 @@
             customerAppointmentRadioButton.TabIndex = 48;
             customerAppointmentRadioButton.Text = "Customer Appointments";
             customerAppointmentRadioButton.UseVisualStyleBackColor = true;
+            customerAppointmentRadioButton.CheckedChanged += customerAppointmentRadioButton_CheckedChanged;
             // 
             // consultantDropBox
             // 
@@ -206,11 +211,25 @@
             consultantLabel.TabIndex = 49;
             consultantLabel.Text = "Consultant";
             // 
+            // reportInfoTextBox
+            // 
+            reportInfoTextBox.BorderStyle = BorderStyle.None;
+            reportInfoTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            reportInfoTextBox.Location = new Point(22, 233);
+            reportInfoTextBox.Multiline = true;
+            reportInfoTextBox.Name = "reportInfoTextBox";
+            reportInfoTextBox.ReadOnly = true;
+            reportInfoTextBox.Size = new Size(202, 81);
+            reportInfoTextBox.TabIndex = 51;
+            reportInfoTextBox.Text = "A report for getting the count of each appointment type in the database.";
+            reportInfoTextBox.TextAlign = HorizontalAlignment.Center;
+            // 
             // ReportForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(780, 377);
+            Controls.Add(reportInfoTextBox);
             Controls.Add(consultantDropBox);
             Controls.Add(consultantLabel);
             Controls.Add(customerAppointmentRadioButton);
@@ -252,5 +271,6 @@
         private RadioButton customerAppointmentRadioButton;
         private ComboBox consultantDropBox;
         private Label consultantLabel;
+        private TextBox reportInfoTextBox;
     }
 }

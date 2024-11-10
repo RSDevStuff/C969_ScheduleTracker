@@ -195,6 +195,7 @@
             reportsButton.TabIndex = 30;
             reportsButton.Text = "Reports";
             reportsButton.UseVisualStyleBackColor = true;
+            reportsButton.Click += reportsButton_Click;
             // 
             // updateAppointmentButton
             // 
