@@ -137,13 +137,13 @@ public static class DbManager
                 {
                     return Convert.ToInt32(cmd.ExecuteScalar());
                 }
-        }
+            }
             catch (MySqlException e)
             {
-            MessageBox.Show($"Error: {e.Message}");
-            return -1;
+                MessageBox.Show($"Error: {e.Message}");
+                return -1;
+            }
         }
-    }
     }
 
     public static MySqlCommand GetAuthenticationString(string userName)

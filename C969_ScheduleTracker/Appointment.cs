@@ -1,14 +1,4 @@
-﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Configuration;
-using System.Drawing.Text;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Mysqlx.Resultset;
-
+﻿
 
 namespace C969_ScheduleTracker
 {

@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-
+﻿
 namespace C969_ScheduleTracker;
 
 public class User
