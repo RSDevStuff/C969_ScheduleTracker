@@ -1,9 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Data;
 using MySql.Data.MySqlClient;
-using Mysqlx.Resultset;
-using Org.BouncyCastle.Asn1.Mozilla;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace C969_ScheduleTracker;
 

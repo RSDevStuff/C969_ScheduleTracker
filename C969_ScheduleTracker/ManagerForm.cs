@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using MySql.Data.MySqlClient;
-using Org.BouncyCastle.Crypto.IO;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace C969_ScheduleTracker
 {
@@ -49,13 +39,10 @@ namespace C969_ScheduleTracker
 
             var customerList = (BindingList<Customer>)DbManager.ExecuteQuery(customerQuery, typeof(Customer));
             var appointmentList = (BindingList<Appointment>)DbManager.ExecuteQuery(appointmentQuery, typeof(Appointment));
-            var addressList = (BindingList<FullAddress>)DbManager.ExecuteQuery(addressQuery, typeof(FullAddress));
-
 
             // Populate DataGridViews
             AppointmentManager.LoadAppointmentsFromDb(appointmentList);
             CustomerManager.LoadCustomersFromDb(customerList);
-            CustomerManager.LoadAddressesFromDb(addressList);
 
             appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserId(_userId);
             customerGridView.DataSource = CustomerManager.AllCustomers;
@@ -72,7 +59,6 @@ namespace C969_ScheduleTracker
             appointmentGridView.AllowUserToAddRows = false;
             appointmentGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             appointmentGridView.CellFormatting += appointmentGridView_CellFormatting;
-            ;
 
             // Customer GridView Appearance and Behavior
             customerGridView.Columns["CustomerId"].Visible = false;
@@ -82,10 +68,10 @@ namespace C969_ScheduleTracker
             customerGridView.AllowUserToAddRows = false;
             customerGridView.SelectionChanged += customerGridView_SelectionChanged;
 
-
+            AppointmentManager.CheckForUpcomingAppointments(_userId);
             appointmentGridView.ClearSelection();
             customerGridView.ClearSelection();
-            AppointmentManager.CheckForUpcomingAppointments(_userId);
+            
         }
 
         // Logic for DateRange ComboBox
@@ -244,7 +230,7 @@ namespace C969_ScheduleTracker
             string errorMessages = "";
             DateTime startDateTime;
             DateTime endDateTime;
-            string selectedType = "";
+            string selectedType;
             int customerId;
             bool validForm = true;
 
@@ -587,72 +573,88 @@ namespace C969_ScheduleTracker
                 int addressId = 0;
                 int cityId = 0;
                 int countryId = 0;
-                bool isFound = false;
 
-                foreach (var address in CustomerManager.AllAddresses)
+
+                // Check if country exists, grab the ID if it does
+                var countryQuery = DbManager.GetCountryIdByName(newCustomer.Country.Trim());
+                var countryList = (DataTable)DbManager.ExecuteQuery(countryQuery);
+                if (countryList.Rows.Count > 0)
                 {
-                    if (address.Country == newCustomer.Country.Trim())
-                    {
-                        countryId = address.CountryId;
-                        if (address.City == newCustomer.City.Trim())
-                        {
-                            cityId = address.CityId;
-                            if (address.AddressName == newCustomer.Address.Trim())
-                            {
-                                MessageBox.Show(address.AddressId.ToString());
-                                addressId = address.AddressId;
-                                isFound = true;
-                                break;
-
-                            }
-                            else
-                            {
-                                // create new addressId using found city and country combination
-                                var mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone,
-                                    _userName);
-                                addressId = DbManager.ExecuteModificationReturnId(mod);
-                                isFound = true;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            // create new city Id within the existing country
-                            var mod = DbManager.AddNewCity(newCustomer.City, countryId, _userName);
-                            cityId = DbManager.ExecuteModificationReturnId(mod);
-
-
-                            // create new Address using the created city
-                            mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone, _userName);
-                            addressId = DbManager.ExecuteModificationReturnId(mod);
-                            isFound = true;
-                            break;
-                        }
-                    }
+                    countryId = Convert.ToInt32(countryList.Rows[0]["countryId"]);
                 }
-
-                if (!isFound)
+                else
                 {
                     // Create new country ID
                     var mod = DbManager.AddNewCountry(newCustomer.Country, _userName);
                     countryId = DbManager.ExecuteModificationReturnId(mod);
 
-                    // ...new cityId
+                    // Create new city ID using Country ID
                     mod = DbManager.AddNewCity(newCustomer.City, countryId, _userName);
                     cityId = DbManager.ExecuteModificationReturnId(mod);
 
-                    // ...and new address Id.
+                    // Create new address ID using city ID 
                     mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone, _userName);
                     addressId = DbManager.ExecuteModificationReturnId(mod);
-
                 }
-                var customerInsert = DbManager.AddNewCustomer(newCustomer.Name, addressId, _userName);
-                var newCustomerId = DbManager.ExecuteModificationReturnId(customerInsert);
-                MessageBox.Show($"New customer created with ID: {newCustomerId}");
+
+                // Check if city exists, grab the ID if it does
+                var cityQuery = DbManager.GetCityByCityNameAndCountryId(newCustomer.City, countryId);
+                var cityList = (DataTable)DbManager.ExecuteQuery(cityQuery);
+                if (cityList.Rows.Count > 0)
+                {
+                    cityId = Convert.ToInt32(cityList.Rows[0]["cityId"]);
+                }
+                else
+                {
+                    // Create new City ID using Country ID
+                    var mod = DbManager.AddNewCity(newCustomer.City, countryId, _userName);
+                    cityId = DbManager.ExecuteModificationReturnId(mod);
+
+                    // Create new address ID using City ID
+                    mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone, _userName);
+                    addressId = DbManager.ExecuteModificationReturnId(mod);
+                }
+
+                // Check if the address exists, including phone, grab the ID if it does
+                var addressQuery =
+                    DbManager.GetAddressIdByAddressNamePhoneAndCityId(newCustomer.Address, newCustomer.Phone,
+                        cityId);
+                var addressList = (DataTable)DbManager.ExecuteQuery(addressQuery);
+                if (addressList.Rows.Count > 0)
+                {
+                    addressId = Convert.ToInt32(addressList.Rows[0]["addressId"]);
+                }
+                else
+                {
+                    // Create new address ID
+                    var mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone, _userName);
+                    addressId = DbManager.ExecuteModificationReturnId(mod);
+                }
+
+                // Finally, add the customer
+                var addCustomers = DbManager.AddNewCustomer(newCustomer.Name, addressId, _userName);
+                var rows = DbManager.ExecuteModification(addCustomers);
+                if (rows > 0)
+                {
+                    MessageBox.Show("Customer record " + newCustomer.CustomerId + "updated.");
+                }
+
+                // Refresh customer table
                 var customerQuery = DbManager.GetCustomerAll();
                 var customerList = (BindingList<Customer>)DbManager.ExecuteQuery(customerQuery, typeof(Customer));
                 CustomerManager.LoadCustomersFromDb(customerList);
                 customerGridView.DataSource = customerList;
+
+                // Refresh address table, though we should figure out if we need it
+                var allAddressQuery = DbManager.GetAddressAll();
+                var allAddressList = (BindingList<FullAddress>)DbManager.ExecuteQuery(allAddressQuery, typeof(FullAddress));
+                CustomerManager.LoadAddressesFromDb(allAddressList);
+
+                // Refresh appointment table
+                var appointmentQuery = DbManager.GetAppointmentAll();
+                var appointmentList = (BindingList<Appointment>)DbManager.ExecuteQuery(appointmentQuery, typeof(Appointment));
+                AppointmentManager.LoadAppointmentsFromDb(appointmentList);
+                appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserId(_userId);
 
             }
             else
