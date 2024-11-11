@@ -47,6 +47,12 @@ public static class CustomerManager
         return new BindingList<Customer>(_allCustomers.Where(customer => customer.CustomerId == customerId).ToList());
     }
 
+    public static BindingList<Customer> GetCustomerByStringValue(string search)
+    {
+        return new BindingList<Customer>(_allCustomers.Where(customer => customer.Address.Contains(search) || customer.Name.Contains(search) ||
+                                                                         customer.City.Contains(search) || customer.Country.Contains(search)
+                                                                         || customer.Phone.Contains(search)).ToList());
+    }
 
 
 }

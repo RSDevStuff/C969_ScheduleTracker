@@ -1,11 +1,12 @@
 using System.ComponentModel;
+using System.Security.Authentication;
 
 namespace C969_ScheduleTracker
 {
     public partial class LogIn : Form
     {
-        public int UserID {get; set; }
-        public string UserName {get; set; }
+        public int UserID { get; set; }
+        public string UserName { get; set; }
         private LocalizationManager _localizationManager;
         public LogIn()
         {
@@ -16,56 +17,29 @@ namespace C969_ScheduleTracker
 
         private void signInButton_Click(object sender, EventArgs e)
         {
-            Logger logger = new Logger();
             string username = userNameTextBox.Text;
             string password = userPwTextBox.Text;
-            string errorMessage = "";
             string errorLabel = "";
-
-            if (!String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password))
+            switch (_localizationManager.GetCurrentCulture().Substring(0, 2))
             {
-                var query = DbManager.GetAuthenticationString(username.Trim());
-                var result = (BindingList<User>) DbManager.ExecuteQuery(query, typeof(User));
-
-                if (result.Count > 0 && password == result[0].Password.ToString())
-                {
-                    logger.logSuccess(username, DateTime.Now.ToUniversalTime());
-
-                    // Grab the user ID to bring it to the Manager Form
-                    UserID = result[0].UserId;
-                    UserName = result[0].Username;
-
-                    DialogResult = DialogResult.OK;
-                    Close();
-                }
-                else
-                {
-                    switch (_localizationManager.GetCurrentCulture().Substring(0, 2))
-                    {
-                        case "fr":
-                            errorMessage = _localizationManager.GetString("ErrorMessage");
-                            errorLabel = _localizationManager.GetString("ErrorLabel");
-                            break;
-                        case "es":
-                            errorMessage = _localizationManager.GetString("ErrorMessage");
-                            errorLabel = _localizationManager.GetString("ErrorLabel");
-                            break;
-                        case "en":
-                            errorMessage = _localizationManager.GetString("ErrorMessage");
-                            errorLabel = _localizationManager.GetString("ErrorLabel");
-                            break;
-                    }
-                    MessageBox.Show(errorMessage, errorLabel, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    logger.logFailure(username, DateTime.Now.ToUniversalTime());
-                    userPwTextBox.Clear();
-                    userNameTextBox.Select();
-                }
+                case "fr":
+                case "es":
+                case "en":
+                    errorLabel = _localizationManager.GetString("ErrorLabel");
+                    break;
+                default:
+                    errorLabel = "Authentication failed.";
+                    break;
             }
-            else
+            try
             {
-                userNameTextBox.Clear();
-                userPwTextBox.Clear();
+                authenticateUser(username, password);
             }
+            catch (AuthenticationException ex)
+            {
+                MessageBox.Show(ex.Message, errorLabel, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+            }
+
         }
 
         private void LoadLocalization()
@@ -84,6 +58,88 @@ namespace C969_ScheduleTracker
         private void exitButton_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        public void authenticateUser(string username, string password)
+        {
+            Logger logger = new Logger();
+            var errorMessage = "";
+
+            if (!String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password))
+            {
+                var query = DbManager.GetAuthenticationString(username.Trim());
+                var result = (BindingList<User>)DbManager.ExecuteQuery(query, typeof(User));
+
+                if (result.Count > 0 && password == result[0].Password)
+                {
+                    // Log successful log in
+                    logger.logSuccess(username, DateTime.Now.ToUniversalTime());
+
+                    // Grab the user ID
+                    UserID = result[0].UserId;
+                    UserName = result[0].Username;
+
+                    // Close form with success
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+                else
+                {
+                    // Set error message and label based on localization.
+                    switch (_localizationManager.GetCurrentCulture().Substring(0, 2))
+                    {
+                        case "fr":
+                        case "es":
+                        case "en":
+                            errorMessage = _localizationManager.GetString("ErrorMessage");
+                            break;
+                        default:
+                            errorMessage = "Authentication failed.";
+                            break;
+                    }
+
+                    // Log failed login attempt.
+                    logger.logFailure(username, DateTime.Now.ToUniversalTime());
+
+                    // Clear the text boxes.
+                    userPwTextBox.Clear();
+                    userNameTextBox.Select();
+
+                    // Throw exception
+                    throw new AuthenticationException(errorMessage);
+                }
+            }
+            else
+            {
+                // Clear the text boxes
+                userNameTextBox.Clear();
+                userPwTextBox.Clear();
+
+                // Set error message and title
+                switch (_localizationManager.GetCurrentCulture().Substring(0, 2))
+                {
+                    case "fr":
+                    case "es":
+                    case "en":
+                        errorMessage = _localizationManager.GetString("BlankMessage");
+                        break;
+                    default:
+                        errorMessage = "Username and password fields cannot be empty.";
+                        break;
+                }
+
+                throw new AuthenticationException(errorMessage);
+            }
+        }
+
+        private void userPwTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                signInButton.PerformClick();
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
         }
     }
 }

@@ -119,4 +119,7 @@
 	<data name="ErrorMessage" xml:space="preserve">
 		<value>Nom d'utilisateur ou mot de passe incorrect.</value>
 	</data>
+	<data name="BlankMessage" xml:space="preserve">
+		<value>Le nom d'utilisateur et le mot de passe ne peuvent pas être vides.</value>
+	</data>
 </root>

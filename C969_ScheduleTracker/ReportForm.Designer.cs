@@ -30,8 +30,6 @@
         {
             reportFormLabel = new Label();
             reportDataView = new DataGridView();
-            typeLabel = new Label();
-            typeComboBox = new ComboBox();
             startLabel = new Label();
             startDatePicker = new DateTimePicker();
             endLabel = new Label();
@@ -60,36 +58,25 @@
             // 
             // reportDataView
             // 
+            reportDataView.AllowUserToAddRows = false;
+            reportDataView.AllowUserToDeleteRows = false;
+            reportDataView.AllowUserToResizeColumns = false;
+            reportDataView.AllowUserToResizeRows = false;
+            reportDataView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             reportDataView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            reportDataView.Location = new Point(263, 77);
+            reportDataView.Location = new Point(244, 77);
             reportDataView.Name = "reportDataView";
-            reportDataView.Size = new Size(493, 237);
+            reportDataView.ReadOnly = true;
+            reportDataView.RowHeadersVisible = false;
+            reportDataView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            reportDataView.Size = new Size(536, 237);
             reportDataView.TabIndex = 37;
-            // 
-            // typeLabel
-            // 
-            typeLabel.AutoSize = true;
-            typeLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            typeLabel.Location = new Point(13, 80);
-            typeLabel.Name = "typeLabel";
-            typeLabel.Size = new Size(42, 21);
-            typeLabel.TabIndex = 31;
-            typeLabel.Text = "Type";
-            // 
-            // typeComboBox
-            // 
-            typeComboBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            typeComboBox.FormattingEnabled = true;
-            typeComboBox.Location = new Point(103, 77);
-            typeComboBox.Name = "typeComboBox";
-            typeComboBox.Size = new Size(121, 29);
-            typeComboBox.TabIndex = 38;
             // 
             // startLabel
             // 
             startLabel.AutoSize = true;
             startLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            startLabel.Location = new Point(12, 120);
+            startLabel.Location = new Point(16, 83);
             startLabel.Name = "startLabel";
             startLabel.Size = new Size(42, 21);
             startLabel.TabIndex = 39;
@@ -99,7 +86,7 @@
             // 
             startDatePicker.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             startDatePicker.Format = DateTimePickerFormat.Short;
-            startDatePicker.Location = new Point(103, 114);
+            startDatePicker.Location = new Point(107, 77);
             startDatePicker.Name = "startDatePicker";
             startDatePicker.Size = new Size(121, 29);
             startDatePicker.TabIndex = 40;
@@ -108,7 +95,7 @@
             // 
             endLabel.AutoSize = true;
             endLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            endLabel.Location = new Point(13, 155);
+            endLabel.Location = new Point(17, 118);
             endLabel.Name = "endLabel";
             endLabel.Size = new Size(36, 21);
             endLabel.TabIndex = 41;
@@ -118,7 +105,7 @@
             // 
             endDatePicker.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             endDatePicker.Format = DateTimePickerFormat.Short;
-            endDatePicker.Location = new Point(103, 149);
+            endDatePicker.Location = new Point(107, 112);
             endDatePicker.Name = "endDatePicker";
             endDatePicker.Size = new Size(121, 29);
             endDatePicker.TabIndex = 42;
@@ -126,7 +113,7 @@
             // runReportButton
             // 
             runReportButton.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            runReportButton.Location = new Point(22, 331);
+            runReportButton.Location = new Point(22, 320);
             runReportButton.Name = "runReportButton";
             runReportButton.Size = new Size(106, 39);
             runReportButton.TabIndex = 43;
@@ -137,22 +124,24 @@
             // clearReportButton
             // 
             clearReportButton.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            clearReportButton.Location = new Point(134, 331);
+            clearReportButton.Location = new Point(134, 320);
             clearReportButton.Name = "clearReportButton";
             clearReportButton.Size = new Size(106, 39);
             clearReportButton.TabIndex = 44;
             clearReportButton.Text = "Clear";
             clearReportButton.UseVisualStyleBackColor = true;
+            clearReportButton.Click += clearReportButton_Click;
             // 
             // closeButton
             // 
             closeButton.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            closeButton.Location = new Point(650, 331);
+            closeButton.Location = new Point(674, 320);
             closeButton.Name = "closeButton";
             closeButton.Size = new Size(106, 39);
             closeButton.TabIndex = 45;
             closeButton.Text = "Close";
             closeButton.UseVisualStyleBackColor = true;
+            closeButton.Click += closeButton_Click;
             // 
             // appointmentTypeRadioButton
             // 
@@ -196,7 +185,7 @@
             // 
             consultantDropBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             consultantDropBox.FormattingEnabled = true;
-            consultantDropBox.Location = new Point(103, 184);
+            consultantDropBox.Location = new Point(107, 147);
             consultantDropBox.Name = "consultantDropBox";
             consultantDropBox.Size = new Size(121, 29);
             consultantDropBox.TabIndex = 50;
@@ -205,7 +194,7 @@
             // 
             consultantLabel.AutoSize = true;
             consultantLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            consultantLabel.Location = new Point(13, 187);
+            consultantLabel.Location = new Point(17, 150);
             consultantLabel.Name = "consultantLabel";
             consultantLabel.Size = new Size(85, 21);
             consultantLabel.TabIndex = 49;
@@ -215,20 +204,20 @@
             // 
             reportInfoTextBox.BorderStyle = BorderStyle.None;
             reportInfoTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            reportInfoTextBox.Location = new Point(22, 233);
+            reportInfoTextBox.Location = new Point(26, 196);
             reportInfoTextBox.Multiline = true;
             reportInfoTextBox.Name = "reportInfoTextBox";
             reportInfoTextBox.ReadOnly = true;
             reportInfoTextBox.Size = new Size(202, 81);
             reportInfoTextBox.TabIndex = 51;
-            reportInfoTextBox.Text = "A report for getting the count of each appointment type in the database.";
+            reportInfoTextBox.Text = "A report for getting the count of each appointment type in the database given a period of time.";
             reportInfoTextBox.TextAlign = HorizontalAlignment.Center;
             // 
             // ReportForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(780, 377);
+            ClientSize = new Size(792, 366);
             Controls.Add(reportInfoTextBox);
             Controls.Add(consultantDropBox);
             Controls.Add(consultantLabel);
@@ -242,9 +231,7 @@
             Controls.Add(endLabel);
             Controls.Add(startDatePicker);
             Controls.Add(startLabel);
-            Controls.Add(typeComboBox);
             Controls.Add(reportDataView);
-            Controls.Add(typeLabel);
             Controls.Add(reportFormLabel);
             Name = "ReportForm";
             Text = "Reports";
@@ -257,8 +244,6 @@
 
         private Label reportFormLabel;
         private DataGridView reportDataView;
-        private Label typeLabel;
-        private ComboBox typeComboBox;
         private Label startLabel;
         private DateTimePicker startDatePicker;
         private Label endLabel;

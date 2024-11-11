@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 using Org.BouncyCastle.Crypto.IO;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace C969_ScheduleTracker
 {
@@ -46,9 +47,9 @@ namespace C969_ScheduleTracker
             customerQuery = DbManager.GetCustomerAll();
             addressQuery = DbManager.GetAddressAll();
 
-            var customerList = (BindingList<Customer>) DbManager.ExecuteQuery(customerQuery, typeof(Customer));
-            var appointmentList = (BindingList<Appointment>) DbManager.ExecuteQuery(appointmentQuery, typeof(Appointment));
-            var addressList = (BindingList<FullAddress>) DbManager.ExecuteQuery(addressQuery, typeof(FullAddress));
+            var customerList = (BindingList<Customer>)DbManager.ExecuteQuery(customerQuery, typeof(Customer));
+            var appointmentList = (BindingList<Appointment>)DbManager.ExecuteQuery(appointmentQuery, typeof(Appointment));
+            var addressList = (BindingList<FullAddress>)DbManager.ExecuteQuery(addressQuery, typeof(FullAddress));
 
 
             // Populate DataGridViews
@@ -316,7 +317,7 @@ namespace C969_ScheduleTracker
                 {
                     int code = DbManager.ExecuteModification(insertStatement);
                     var appointmentQuery = DbManager.GetAppointmentAll();
-                    var appointmentList = (BindingList<Appointment>) DbManager.ExecuteQuery(appointmentQuery, typeof(Appointment));
+                    var appointmentList = (BindingList<Appointment>)DbManager.ExecuteQuery(appointmentQuery, typeof(Appointment));
                     AppointmentManager.LoadAppointmentsFromDb(appointmentList);
                     appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserId(_userId);
                     appointmentGridView.ClearSelection();
@@ -385,7 +386,7 @@ namespace C969_ScheduleTracker
                             int code = DbManager.ExecuteModification(removeStatement);
                             var appointmentQuery = DbManager.GetAppointmentAll();
 
-                            var appointmentList = (BindingList<Appointment>) DbManager.ExecuteQuery(appointmentQuery, typeof(Appointment));
+                            var appointmentList = (BindingList<Appointment>)DbManager.ExecuteQuery(appointmentQuery, typeof(Appointment));
                             AppointmentManager.LoadAppointmentsFromDb(appointmentList);
                             appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserId(_userId);
                             appointmentGridView.ClearSelection();
@@ -401,7 +402,7 @@ namespace C969_ScheduleTracker
             }
         }
 
-        // Lets convert from UTC to Local
+        // Let's convert from UTC to Local
         private void appointmentGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             // Check current column
@@ -439,7 +440,7 @@ namespace C969_ScheduleTracker
                     // Creating a new appointment object
                     Appointment newAppointment = new Appointment();
 
-                    // Pulling out the parts we want from the DateTimePickers
+                    // Pulling out the sections we want from the DateTimePickers
                     DateTime selectedDate = dateTimePicker.Value.Date;
                     TimeSpan selectedStartTime =
                         new TimeSpan(startTimePicker.Value.Hour, startTimePicker.Value.Minute, 0);
@@ -535,7 +536,7 @@ namespace C969_ScheduleTracker
 
             }
         }
-
+        //TODO Need to fix this method, use the update customer method as the template
         private void addCustomerButton_Click(object sender, EventArgs e)
         {
             bool validForm = true;
@@ -556,7 +557,7 @@ namespace C969_ScheduleTracker
                     }
                     if (textBox.Name == "phoneTextBox")
                     {
-                        if (!Validation.ValidatePhoneNumber(textBox.Text.ToString(), out errorMessage))
+                        if (!Validation.ValidatePhoneNumber(textBox.Text, out errorMessage))
                         {
                             errorMessages += errorMessage + "\n";
                             validForm = false;
@@ -610,7 +611,6 @@ namespace C969_ScheduleTracker
                                 var mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone,
                                     _userName);
                                 addressId = DbManager.ExecuteModificationReturnId(mod);
-                                MessageBox.Show("New Address ID: " + addressId.ToString());
                                 isFound = true;
                                 break;
                             }
@@ -625,8 +625,6 @@ namespace C969_ScheduleTracker
                             // create new Address using the created city
                             mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone, _userName);
                             addressId = DbManager.ExecuteModificationReturnId(mod);
-                            MessageBox.Show("New City ID: " + cityId.ToString() + "\n" + "New Address ID: " +
-                                            addressId.ToString());
                             isFound = true;
                             break;
                         }
@@ -646,15 +644,13 @@ namespace C969_ScheduleTracker
                     // ...and new address Id.
                     mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone, _userName);
                     addressId = DbManager.ExecuteModificationReturnId(mod);
-                    MessageBox.Show("New Country ID: " + countryId.ToString() + "\n" + "New City ID: " +
-                                    cityId.ToString() + "\n" + "New Address ID: " + addressId.ToString());
 
                 }
                 var customerInsert = DbManager.AddNewCustomer(newCustomer.Name, addressId, _userName);
                 var newCustomerId = DbManager.ExecuteModificationReturnId(customerInsert);
                 MessageBox.Show($"New customer created with ID: {newCustomerId}");
                 var customerQuery = DbManager.GetCustomerAll();
-                var customerList = (BindingList<Customer>) DbManager.ExecuteQuery(customerQuery, typeof(Customer));
+                var customerList = (BindingList<Customer>)DbManager.ExecuteQuery(customerQuery, typeof(Customer));
                 CustomerManager.LoadCustomersFromDb(customerList);
                 customerGridView.DataSource = customerList;
 
@@ -687,12 +683,12 @@ namespace C969_ScheduleTracker
                             int code = DbManager.ExecuteModification(removeStatement);
 
                             var appointmentQuery = DbManager.GetAppointmentAll();
-                            var appointmentList = (BindingList<Appointment>) DbManager.ExecuteQuery(appointmentQuery, typeof(Appointment));
+                            var appointmentList = (BindingList<Appointment>)DbManager.ExecuteQuery(appointmentQuery, typeof(Appointment));
                             AppointmentManager.LoadAppointmentsFromDb(appointmentList);
                             appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserId(_userId);
 
                             var customerQuery = DbManager.GetCustomerAll();
-                            var customerList = (BindingList<Customer>) DbManager.ExecuteQuery(customerQuery, typeof(Customer));
+                            var customerList = (BindingList<Customer>)DbManager.ExecuteQuery(customerQuery, typeof(Customer));
                             CustomerManager.LoadCustomersFromDb(customerList);
                             customerGridView.DataSource = CustomerManager.AllCustomers;
 
@@ -709,15 +705,12 @@ namespace C969_ScheduleTracker
             }
         }
 
+        // Update customer now fixed, properly updates records. 
         private void updateCustomerButton_Click(object sender, EventArgs e)
         {
             bool validForm = true;
             string errorMessage;
             string errorMessages = "";
-            string customerName;
-            string customerId;
-            string addressName;
-            string phone;
 
             if (customerGridView.SelectedRows.Count > 0)
             {
@@ -735,7 +728,7 @@ namespace C969_ScheduleTracker
 
                             if (textBox.Name == "phoneTextBox")
                             {
-                                if (!Validation.ValidatePhoneNumber(textBox.Text.ToString(), out errorMessage))
+                                if (!Validation.ValidatePhoneNumber(textBox.Text, out errorMessage))
                                 {
                                     errorMessages += errorMessage + "\n";
                                     validForm = false;
@@ -763,102 +756,92 @@ namespace C969_ScheduleTracker
                     newCustomer.City = cityTextBox.Text;
                     newCustomer.Country = countryTextBox.Text;
                     newCustomer.Phone = phoneTextBox.Text;
+                    newCustomer.CustomerId = Convert.ToInt32(selectedRow.Cells["CustomerId"].Value);
 
                     // Grabs addressId, cityId, countryId
                     int addressId = 0;
                     int cityId = 0;
                     int countryId = 0;
-                    bool isFound = false;
 
-                    foreach (var address in CustomerManager.AllAddresses)
+
+                    // Check if country exists, grab the ID if it does
+                    var countryQuery = DbManager.GetCountryIdByName(newCustomer.Country.Trim());
+                    var countryList = (DataTable) DbManager.ExecuteQuery(countryQuery);
+                    if (countryList.Rows.Count > 0)
                     {
-                        MessageBox.Show(address.Phone);
-                        if (address.Country == newCustomer.Country.Trim())
-                        {
-                            // If the country exists in our DB, we just select the ID.
-                            countryId = address.CountryId;
-                            if (address.City == newCustomer.City.Trim())
-                            {
-                                // If the city exists in our DB, we just select the ID.
-                                cityId = address.CityId;
-                                if (address.AddressName == newCustomer.Address.Trim())
-                                {
-                                    // If the address exists in our DB, we just select the ID.
-                                    addressId = address.AddressId;
-                                    if (address.Phone == newCustomer.Phone)
-                                    {
-                                        isFound = true;
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        // Update the existing address with the phone number
-                                        // Not a perfect solution, but the DB provided doesn't allow for a lot of flexibility.
-                                        var mod = DbManager.UpdateExistingAddress(addressId, newCustomer.Address,
-                                            cityId, newCustomer.Phone, _userName);
-                                        var effected = DbManager.ExecuteModification(mod);
-                                        MessageBox.Show("EFFECTED: " + effected.ToString());
-                                        isFound = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // create new city Id within the existing country
-                                var mod = DbManager.AddNewCity(newCustomer.City, countryId, _userName);
-                                cityId = DbManager.ExecuteModificationReturnId(mod);
-
-
-                                // create new Address using the created city
-                                mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone,
-                                    _userName);
-                                addressId = DbManager.ExecuteModificationReturnId(mod);
-                                isFound = true;
-                                break;
-                            }
-                        }
+                        countryId = Convert.ToInt32(countryList.Rows[0]["countryId"]);
                     }
-
-                    if (!isFound)
+                    else
                     {
                         // Create new country ID
                         var mod = DbManager.AddNewCountry(newCustomer.Country, _userName);
                         countryId = DbManager.ExecuteModificationReturnId(mod);
 
-                        // ...new cityId
+                        // Create new city ID using Country ID
                         mod = DbManager.AddNewCity(newCustomer.City, countryId, _userName);
                         cityId = DbManager.ExecuteModificationReturnId(mod);
 
-                        // ...and new address Id.
+                        // Create new address ID using city ID 
                         mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone, _userName);
                         addressId = DbManager.ExecuteModificationReturnId(mod);
-                        MessageBox.Show("New Country ID: " + countryId.ToString() + "\n" + "New City ID: " +
-                                        cityId.ToString() + "\n" + "New Address ID: " + addressId.ToString());
                     }
 
-                    // Need a modify customer query that will update the database, everything else should follow??
-                    // Need to verify that appointment customer names will change
-                    customerId = selectedRow.Cells["CustomerId"].Value.ToString();
-                    var customerUpdate = DbManager.UpdateExistingCustomer(customerId, newCustomer.Name, addressId, _userName);
+                    // Check if city exists, grab the ID if it does
+                    var cityQuery = DbManager.GetCityByCityNameAndCountryId(newCustomer.City, countryId);
+                    var cityList = (DataTable) DbManager.ExecuteQuery(cityQuery);
+                    if (cityList.Rows.Count > 0)
+                    {
+                        cityId = Convert.ToInt32(cityList.Rows[0]["cityId"]);
+                    }
+                    else
+                    {
+                        // Create new City ID using Country ID
+                        var mod = DbManager.AddNewCity(newCustomer.City, countryId, _userName);
+                        cityId = DbManager.ExecuteModificationReturnId(mod);
+
+                        // Create new address ID using City ID
+                        mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone, _userName);
+                        addressId = DbManager.ExecuteModificationReturnId(mod);
+                    }
+
+                    // Check if the address exists, including phone, grab the ID if it does
+                    var addressQuery =
+                        DbManager.GetAddressIdByAddressNamePhoneAndCityId(newCustomer.Address, newCustomer.Phone,
+                            cityId);
+                    var addressList = (DataTable) DbManager.ExecuteQuery(addressQuery);
+                    if (addressList.Rows.Count > 0)
+                    {
+                        addressId = Convert.ToInt32(addressList.Rows[0]["addressId"]);
+                    }
+                    else
+                    {
+                        // Create new address ID
+                        var mod = DbManager.AddNewAddress(newCustomer.Address, cityId, newCustomer.Phone, _userName);
+                        addressId = DbManager.ExecuteModificationReturnId(mod);
+                    }
+
+                    // Finally, modify the customer
+                    var customerUpdate = DbManager.UpdateExistingCustomer(newCustomer.CustomerId, newCustomer.Name, addressId, _userName);
                     var rows = DbManager.ExecuteModification(customerUpdate);
-                    MessageBox.Show("EFFECTED: " + rows.ToString());
+                    if (rows > 0)
+                    {
+                        MessageBox.Show("Customer record " + newCustomer.CustomerId + "updated.");
+                    }
 
+                    // Refresh customer table
                     var customerQuery = DbManager.GetCustomerAll();
-                    var customerList = (BindingList<Customer>) DbManager.ExecuteQuery(customerQuery, typeof(Customer));
-
-
-                    var addressQuery = DbManager.GetAddressAll();
-                    var addressList = (BindingList<FullAddress>) DbManager.ExecuteQuery(addressQuery, typeof(FullAddress));
-                    CustomerManager.LoadAddressesFromDb(addressList);
-
+                    var customerList = (BindingList<Customer>)DbManager.ExecuteQuery(customerQuery, typeof(Customer));
                     CustomerManager.LoadCustomersFromDb(customerList);
                     customerGridView.DataSource = customerList;
+                    
+                    // Refresh address table, though we should figure out if we need it
+                    var allAddressQuery = DbManager.GetAddressAll();
+                    var allAddressList = (BindingList<FullAddress>)DbManager.ExecuteQuery(allAddressQuery, typeof(FullAddress));
+                    CustomerManager.LoadAddressesFromDb(allAddressList);
 
-
-                    // Refresh appointment list
+                    // Refresh appointment table
                     var appointmentQuery = DbManager.GetAppointmentAll();
-                    var appointmentList = (BindingList<Appointment>) DbManager.ExecuteQuery(appointmentQuery, typeof(Appointment));
+                    var appointmentList = (BindingList<Appointment>)DbManager.ExecuteQuery(appointmentQuery, typeof(Appointment));
                     AppointmentManager.LoadAppointmentsFromDb(appointmentList);
                     appointmentGridView.DataSource = AppointmentManager.GetAppointmentByUserId(_userId);
 
@@ -896,6 +879,29 @@ namespace C969_ScheduleTracker
         {
             ReportForm reportForm = new ReportForm();
             reportForm.ShowDialog();
+        }
+
+        private void searchTextBox_TextChanged(object sender, EventArgs e)
+        {
+            string searchValue = searchTextBox.Text.Trim();
+            var filteredCustomerList = new BindingList<Customer>();
+
+            // Clear the filtered list
+            if (String.IsNullOrEmpty(searchValue))
+            {
+               customerGridView.DataSource = CustomerManager.AllCustomers;
+            }
+            else
+            {
+                if (Validation.ValidateInteger(searchValue, out var value, out var message))
+                {
+                    customerGridView.DataSource = CustomerManager.GetCustomerById(value);
+                }
+                else
+                {
+                    customerGridView.DataSource = CustomerManager.GetCustomerByStringValue(searchValue);
+                }
+            }
         }
     }
 }

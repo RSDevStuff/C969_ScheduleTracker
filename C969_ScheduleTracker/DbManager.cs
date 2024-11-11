@@ -132,21 +132,21 @@ public static class DbManager
     {
         using (MySqlConnection connection = new MySqlConnection(ConnectionString))
         {
-            //try
-            //{
+            try
+            {
                 connection.Open();
                 cmd.Connection = connection;
                 using (cmd)
                 {
                     return Convert.ToInt32(cmd.ExecuteScalar());
                 }
-            //}
-            //catch (MySqlException e)
-            //{
-            //    MessageBox.Show($"Error: {e.Message}");
-            //    return -1;
-            //}
         }
+            catch (MySqlException e)
+            {
+            MessageBox.Show($"Error: {e.Message}");
+            return -1;
+        }
+    }
     }
 
     public static MySqlCommand GetAuthenticationString(string userName)
@@ -355,7 +355,7 @@ public static class DbManager
         return cmd;
     }
 
-    public static MySqlCommand UpdateExistingCustomer(string customerId, string customerName, int addressId, string userName)
+    public static MySqlCommand UpdateExistingCustomer(int customerId, string customerName, int addressId, string userName)
     {
         DateTime currentDate = DateTime.Now.ToUniversalTime();
         string updateStatement =
@@ -389,6 +389,48 @@ public static class DbManager
         MySqlCommand cmd = new MySqlCommand(query);
         cmd.Parameters.AddWithValue("@startDate", start);
         cmd.Parameters.AddWithValue("@endDate", end);
+        return cmd;
+    }
+
+    public static MySqlCommand GetCustomerAppointmentCounts(DateTime start, DateTime end)
+    {
+        string query = "SELECT appointment.customerId as CustomerId, " +
+                       "customer.customerName as CustomerName, " +
+                       "COUNT(appointment.customerId) as Count " +
+                       "FROM appointment LEFT JOIN customer on customer.customerId = appointment.customerId " +
+                       "WHERE (appointment.start BETWEEN @startDate AND @endDate) " +
+                       "GROUP BY appointment.customerId;";
+        MySqlCommand cmd = new MySqlCommand(query);
+        cmd.Parameters.AddWithValue("@startDate", start);
+        cmd.Parameters.AddWithValue("@endDate", end);
+
+        return cmd;
+    }
+
+    public static MySqlCommand GetCountryIdByName(string countryName)
+    {
+        string query = "SELECT countryId FROM country WHERE country = @countryName";
+        MySqlCommand cmd = new MySqlCommand(query);
+        cmd.Parameters.AddWithValue("@countryName", countryName);
+        return cmd;
+    }
+
+    public static MySqlCommand GetCityByCityNameAndCountryId(string cityName, int countryId)
+    {
+        string query = "SELECT cityId FROM city WHERE city = @cityName AND countryId = @countryId";
+        MySqlCommand cmd = new MySqlCommand(query);
+        cmd.Parameters.AddWithValue("@cityName", cityName);
+        cmd.Parameters.AddWithValue("@countryId", countryId);
+        return cmd;
+    }
+
+    public static MySqlCommand GetAddressIdByAddressNamePhoneAndCityId(string address, string phone, int cityId)
+    {
+        string query = "SELECT addressId FROM address WHERE address.address = @address AND phone = @phone AND cityId = @cityId";
+        MySqlCommand cmd = new MySqlCommand(query);
+        cmd.Parameters.AddWithValue("@address", address);
+        cmd.Parameters.AddWithValue("@cityId", cityId);
+        cmd.Parameters.AddWithValue("@phone", phone);
         return cmd;
     }
 }

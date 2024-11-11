@@ -118,4 +118,7 @@
 	<data name="ErrorMessage" xml:space="preserve">
 		<value>Incorrect username or password.</value>
 	</data>
+	<data name="BlankMessage" xml:space="preserve">
+		<value>Username and password cannot be blank.</value>
+	</data>
 </root>

@@ -61,6 +61,15 @@ namespace C969_ScheduleTracker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Username and password cannot be blank..
+        /// </summary>
+        internal static string BlankMessage {
+            get {
+                return ResourceManager.GetString("BlankMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid Sign In.
         /// </summary>
         internal static string ErrorLabel {

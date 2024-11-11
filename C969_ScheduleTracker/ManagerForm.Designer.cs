@@ -401,6 +401,7 @@
             searchTextBox.Name = "searchTextBox";
             searchTextBox.Size = new Size(133, 29);
             searchTextBox.TabIndex = 38;
+            searchTextBox.TextChanged += searchTextBox_TextChanged;
             // 
             // custSignOutButton
             // 
